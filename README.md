@@ -1,2 +1,0 @@
-# fungammon
-Created with CodeSandbox

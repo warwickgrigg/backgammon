@@ -1,0 +1,104 @@
+.App {
+  font-family: sans-serif;
+  text-align: center;
+}
+
+.board {
+  --board-width: 360px;
+  --board-height: calc(var(--board-width) * 5 / 8);
+  --bar-width: calc(var(--board-width) / 20);
+  --point-height: calc((var(--board-height) - var(--point-gap)) / 2);
+  --point-width: calc((var(--board-width) - var(--bar-width)) / 12);
+  --point-gap: calc(var(--board-height) / 6);
+  --board-border: calc(var(--board-height) / 32);
+  --puck-diameter: calc(var(--point-height) / 4.75);
+  --puck-margin: calc((var(--point-width) - var(--puck-diameter)) / 2);
+  --dice-size: calc(var(--board-width) / 18);
+  display: grid;
+  grid-template-columns: repeat(6, var(--point-width)) var(--bar-width) repeat(
+      6,
+      var(--point-width)
+    );
+  grid-template-rows: var(--point-height) var(--point-gap) var(--point-height);
+  grid-template-areas:
+    "p12 p11 p10 p9 p8 p7 p0 p6 p5 p4 p3 p2 p1"
+    "l l ld ld ld lx bar r r r r r r"
+    "p13 p14 p15 p16 p17 p18 p25 p19 p20 p21 p22 p23 p24";
+  background: tan;
+  border: var(--board-border) solid gray;
+  width: var(--board-width);
+}
+
+.board .columns {
+  grid-area: 1 / 1 / 1 / 14;
+}
+
+.column {
+  --color: brown;
+  display: inline-block;
+  height: var(--point-gap);
+  border-left: calc(var(--point-width) / 2) solid transparent;
+  border-right: calc(var(--point-width) / 2) solid transparent;
+  border-bottom: var(--point-height) solid var(--color);
+  border-top: var(--point-height) solid seagreen;
+}
+
+.even {
+  border-bottom-color: seagreen;
+  border-top-color: brown;
+}
+
+.bar {
+  display: inline-block;
+  width: var(--bar-width);
+  height: var(--board-height);
+  background-color: gray;
+}
+
+.puck-stack {
+  justify-self: center;
+  display: flex;
+  flex-direction: column;
+  background: transparent;
+}
+
+.puck-stack.near {
+  flex-direction: column-reverse;
+}
+
+.puck {
+  background: ivory;
+  width: var(--puck-diameter);
+  height: var(--puck-diameter);
+  line-height: var(--puck-diameter);
+  border-radius: 50%;
+  text-align: center;
+}
+
+.puck.dark {
+  color: ivory;
+  background: rgb(7, 7, 48);
+}
+
+.puck.movable::after {
+  content: "·";
+}
+
+.dice {
+  grid-area: ld;
+  align-self: center;
+  justify-content: space-evenly;
+  display: flex;
+}
+
+.die {
+  display: block;
+  line-height: var(--dice-size);
+  width: var(--dice-size);
+  height: var(--dice-size);
+  margin: calc(var(--dice-size) / 10);
+  border-radius: calc(var(--dice-size) / 5);
+  background-color: ivory;
+  text-align: center;
+  transform: rotate(5deg);
+}

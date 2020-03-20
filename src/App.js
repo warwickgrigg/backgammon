@@ -22,7 +22,7 @@ const state = {
     ], [ // black
       0, // on bar
       2, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 5,
-      0, 0, 0, 0, 3, 0,    5, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 3, 0,    5, 0, 0, 0, 1, 0,
       0,  // off
     ],
   ]
@@ -38,7 +38,7 @@ const validMoves = ({ dice, player, points }) => {
       for (var i = 0, taken = []; i < dice.length; i++) {
         pos += dice[i];
         if (pos > 24 || opp[pos] > 1) return result;
-        if (opp[pos] > 1) taken.push(pos);
+        if (opp[pos] === 1) taken.push(pos);
         result.push([pos, taken]);
         if (me[pos]) return result;
       }

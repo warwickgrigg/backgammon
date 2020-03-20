@@ -6,7 +6,7 @@ import Dice from "./components/dice";
 import Counter from "./components/counter";
 import GlobalCounter from "./components/gcounter";
 import { StateProvider } from "./state";
-
+//
 const jlog = o => console.log(JSON.stringify(o, null, 2));
 
 const state = {

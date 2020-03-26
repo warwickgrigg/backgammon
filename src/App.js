@@ -13,14 +13,14 @@ const logj = o => console.log(JSON.stringify(o));
 export default function App() {
   const state = {
     counter: 0,
-    dice: [1, 1],
+    dice: [1, 5],
     isWhite: true, // 1 for white, 0 for black
     // prettier-ignore
     points: [
       [ // white
         0, // on bar
-        2, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 5,
-        0, 0, 0, 0, 2, 0,    6, 0, 0, 0, 0, 0,
+        2, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 3,
+        0, 1, 1, 0, 3, 0,    5, 0, 0, 0, 0, 0,
         0,  // off
       ], [ // black
         0, // on bar

@@ -6,6 +6,7 @@ const myPoints = ({ isWhite, points }) =>
     ? [points[0].slice(), points[1].slice().reverse()]
     : [points[1].slice().reverse(), points[0].slice()];
 
+/*
 const validMoves1 = ({ dice, isWhite, points }) => {
   const moves = (pos, dice, me, opp) => {
     const simpleMoves = (pos, dice, me, opp) => {
@@ -181,28 +182,16 @@ const vMovesy = ({ points, isWhite = true, dice }) => {
   //return false; // no more moves for this puck
   return result;
 };
-
-const permSerial = (n, m, duplicates = true, last) => {
-  if (!last) return Array(n).fill(0);
-  const p = last.concat();
-  for (var i = 0, carry = 1; i < n && carry; i++) {
-    p[i] += carry;
-    if (p[i] >= m - (duplicates ? 0 : i)) {
-      p[i] = 0;
-    } else {
-      carry = 0;
-    }
-  }
-  return carry ? undefined : p;
-};
-
-const perm = (duplicates = true, fn, n, m) => {
-  for (var p = Array(n).fill(0), carry = 0; !carry; ) {
-    fn(p.concat());
+*/
+const cartesianInts = (fn, len = []) => {
+  const n = len.length;
+  let p = new Array(n).fill(0);
+  for (let b = 0, carry = 0; b < 1000 && !carry; b++) {
+    fn(p.slice(0));
     carry = 1;
     for (let i = 0; i < n && carry; i++) {
       p[i] += carry;
-      if (p[i] >= m - (duplicates ? 0 : i)) {
+      if (p[i] >= len[i]) {
         p[i] = 0;
       } else {
         carry = 0;
@@ -211,7 +200,48 @@ const perm = (duplicates = true, fn, n, m) => {
   }
 };
 
-const permArray = (d, fn, n, m) => perm(d, p => p.map(i => m[i]), n, m.length);
+xxxx;
+
+const cartesian = (fn, arrays = []) =>
+  cartesianInts(
+    c => fn(c.map((e, i) => arrays[i][e])),
+    arrays.map(a => a.length)
+  );
+
+cartesianInts(jlog, [2, 3]);
+cartesian(jlog, [["A", "B", "C"], [0, 1], ["x", "y", "z"]]);
+
+//const permArray = (fn, n, m) => perm(p => p.map(i => m[i]), n, m.length);
+/*
+const cartesian = (fn, arrays = []) => {
+  const n = arrays.length;
+  for (let p = new Array(n).fill(0), carry = 0; !carry; ) {
+    fn(p.map((e, i) => arrays[i][e]));
+    carry = 1;
+    for (let i = 0; i < n && carry; i++) {
+      p[i] += carry;
+      if (p[i] >= arrays[i].length) {
+        p[i] = 0;
+      } else {
+        carry = 0;
+      }
+    }
+  }
+};
+*/
+const perm = (fn, n, m) => {
+  const ifAllUnique = fn => a => {
+    for (let i = 0; i < a.length; i++) {
+      for (let j = i + 1; j < a.length; j++) if (a[i] === a[j]) return;
+    }
+    fn(a);
+  };
+  //cartesianInts(jlog, Array(n).fill(m));
+  cartesianInts(ifAllUnique(fn), Array(n).fill(m));
+};
+//
+//perm(jlog, 2, 3);
+//cartesian(jlog, [["A", 1], [0, 1]]);
 
 /*
 const occPoints = (me, [min = 1, max = 15]) => {
@@ -233,14 +263,16 @@ const canGo = (opp, to) => to < opp.length && opp[to] < 2;
 
 const puckMoves = (opp, from, dice) => {
   for (
-    var i = 0, moves = [], taken = [], to = from + dice[i];
-    i < dice.length && to < opp.length && opp[to] < 2;
-    to += dice[++i]
+    var d = 0, moves = [[], []], taken = [], to = from + dice[d];
+    d < dice.length && to < opp.length && opp[to] < 2;
+
   ) {
     if (opp[to]) taken.push(to);
-    moves.push({ from, to, taken: taken.slice() });
+    moves[d].push({ from, to, taken: taken.slice() });
+    d++;
+    to += dice[d];
   }
-  return moves;
+  return moves; //[[singles],[doubles]]
 };
 
 const validMoves = ({ dice, isWhite, points }) => {
@@ -249,7 +281,7 @@ const validMoves = ({ dice, isWhite, points }) => {
   [d1, d2] = [Math.min(d1, d2), Math.max(d1, d2)];
   let dicex = d1 === d2 ? [[d1, d1, d1, d1]] : [[d1, d2], [d2, d1]];
   let [me, opp] = myPoints({ isWhite, points });
-  const segMoves = [[], [], [], []];
+  const segMoves = [[[], []], [[], []], [[], []], [[], []]]; // singles/doubles
 
   let starters = [1, dicex[0].length === 2 ? 2 : 4].map(i =>
     occPucks(me, [1, i])
@@ -264,23 +296,25 @@ const validMoves = ({ dice, isWhite, points }) => {
 
   {
     const p = [];
-    for (let i = 0; i < 10; i++)
-      p.push(permSerial(2, 6, true, p[p.length - 1]));
+    //for (let i = 0; i < 10; i++)
+    //p.push(permSerial(2, 6, true, p[p.length - 1]));
     //jlog({ p });
   }
 
   if (d1 !== d2) {
     dicex.forEach(
-      d =>
-        starters[0].forEach(i => {
-          const moves = puckMoves(opp, i, d);
-          //jlog({ moves });
-          moves.forEach((m, i) => segMoves[i].push(m));
+      (die, d) =>
+        starters[0].forEach(s => {
+          const moves = puckMoves(opp, s, die);
+          jlog({ d, s, moves });
+          moves.forEach((g, i) => segMoves[i][d].push(g));
         })
       //starters[1]
     );
-    permArray;
-    segMoves.map((m, i) => jlog({ ["segMove" + (i + 1)]: m }));
+    //permArray(true, jlog, )
+    segMoves.map((m, im) =>
+      m.map((g, ig) => jlog({ [`segMoves${im}${ig}`]: g }))
+    );
   }
   /*
     //const singles = dicex.map(d => starters[0].filter(e => canGo(opp, e + d)));

@@ -200,48 +200,42 @@ const cartesianInts = (fn, len = []) => {
   }
 };
 
-xxxx;
-
 const cartesian = (fn, arrays = []) =>
   cartesianInts(
     c => fn(c.map((e, i) => arrays[i][e])),
     arrays.map(a => a.length)
   );
 
-cartesianInts(jlog, [2, 3]);
-cartesian(jlog, [["A", "B", "C"], [0, 1], ["x", "y", "z"]]);
+//cartesianInts(jlog, [2, 3]);
+//cartesian(jlog, [["A", 1], [0, 1]]);
+//cartesian(jlog, [["A", "B", "C"], [0, 1], ["x", "y", "z"]]);
 
-//const permArray = (fn, n, m) => perm(p => p.map(i => m[i]), n, m.length);
-/*
-const cartesian = (fn, arrays = []) => {
-  const n = arrays.length;
-  for (let p = new Array(n).fill(0), carry = 0; !carry; ) {
-    fn(p.map((e, i) => arrays[i][e]));
-    carry = 1;
-    for (let i = 0; i < n && carry; i++) {
-      p[i] += carry;
-      if (p[i] >= arrays[i].length) {
-        p[i] = 0;
-      } else {
-        carry = 0;
+const perm = (fn, ordered = false, n, m) => {
+  const result = Array(n);
+  const a = Array.from(new Array(m), (_, i) => i);
+  const recurse = (ri, start) => {
+    for (let i = ordered ? start : 0; i < m; i++) {
+      if (a[i] !== -1) {
+        result[ri] = i;
+        if (ri === n - 1) {
+          fn(result.slice());
+        } else {
+          a[i] = -1; // not available to next level
+          recurse(ri + 1, i + 1);
+          a[i] = i; // make available again
+        }
       }
     }
-  }
-};
-*/
-const perm = (fn, n, m) => {
-  const ifAllUnique = fn => a => {
-    for (let i = 0; i < a.length; i++) {
-      for (let j = i + 1; j < a.length; j++) if (a[i] === a[j]) return;
-    }
-    fn(a);
   };
-  //cartesianInts(jlog, Array(n).fill(m));
-  cartesianInts(ifAllUnique(fn), Array(n).fill(m));
+  recurse(0, 0);
 };
-//
-//perm(jlog, 2, 3);
-//cartesian(jlog, [["A", 1], [0, 1]]);
+
+const permArray = (fn, ordered, n, array) =>
+  perm(p => fn(p.map(e => array[e])), ordered, n, array.length);
+
+const r = [];
+perm(v => r.push(v), true, 2, 3);
+jlog({ l: r.length, r });
 
 /*
 const occPoints = (me, [min = 1, max = 15]) => {
@@ -250,6 +244,7 @@ const occPoints = (me, [min = 1, max = 15]) => {
   return result;
 };
 */
+
 const occPucks = (me, [min = 1, max = 15]) => {
   for (var i = 0, result = []; i < me.length; i++) {
     if (me[i] >= min) {
@@ -287,31 +282,15 @@ const validMoves = ({ dice, isWhite, points }) => {
     occPucks(me, [1, i])
   );
 
-  jlog({
-    //perm: perm(2, 10, false),
-    //ln: perm(2, 10, false).length,
-    //permy: perm(2, 10, true),
-    //ly: perm(2, 10, true).length
-  });
-
-  {
-    const p = [];
-    //for (let i = 0; i < 10; i++)
-    //p.push(permSerial(2, 6, true, p[p.length - 1]));
-    //jlog({ p });
-  }
-
   if (d1 !== d2) {
-    dicex.forEach(
-      (die, d) =>
-        starters[0].forEach(s => {
-          const moves = puckMoves(opp, s, die);
-          jlog({ d, s, moves });
-          moves.forEach((g, i) => segMoves[i][d].push(g));
-        })
-      //starters[1]
+    dicex.forEach((die, d) =>
+      starters[0].forEach(s => {
+        const moves = puckMoves(opp, s, die);
+        jlog({ d, s, moves });
+        moves.forEach((g, i) => segMoves[i][d].push(g));
+      })
     );
-    //permArray(true, jlog, )
+
     segMoves.map((m, im) =>
       m.map((g, ig) => jlog({ [`segMoves${im}${ig}`]: g }))
     );

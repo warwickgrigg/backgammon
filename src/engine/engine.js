@@ -1,5 +1,6 @@
 const countSum = a => a.reduce((a, c) => [a[0] + 1, a[1] + c], [0, 0]);
 const jlog = o => console.log(JSON.stringify(o));
+const jlog2 = o => console.log(JSON.stringify(o, null, 2));
 const pips = (p, points) => points[p].reduce((a, c, i) => a + (25 - i) * c, 0);
 const myPoints = ({ isWhite, points }) =>
   isWhite
@@ -183,7 +184,7 @@ const vMovesy = ({ points, isWhite = true, dice }) => {
   return result;
 };
 */
-const cartesianInts = (fn, len = []) => {
+const cartesian = (fn, len = []) => {
   const n = len.length;
   let p = new Array(n).fill(0);
   for (let b = 0, carry = 0; b < 1000 && !carry; b++) {
@@ -200,15 +201,12 @@ const cartesianInts = (fn, len = []) => {
   }
 };
 
-const cartesian = (fn, arrays = []) =>
-  cartesianInts(
-    c => fn(c.map((e, i) => arrays[i][e])),
-    arrays.map(a => a.length)
-  );
+const cartesianArrays = (fn, arrays = []) =>
+  cartesian(c => fn(c.map((e, i) => arrays[i][e])), arrays.map(a => a.length));
 
-//cartesianInts(jlog, [2, 3]);
-//cartesian(jlog, [["A", 1], [0, 1]]);
-//cartesian(jlog, [["A", "B", "C"], [0, 1], ["x", "y", "z"]]);
+//cartesian(jlog, [2, 3]);
+//cartesianArrays(jlog, [["A", 1], [0, 1]]);
+//cartesianArrays(jlog, [["A", "B", "C"], [0, 1], ["x", "y", "z"]]);
 
 const perm = (fn, ordered = false, n, count) => {
   const a = Array.isArray(count) ? count.slice() : Array(count).fill(1);
@@ -232,15 +230,17 @@ const perm = (fn, ordered = false, n, count) => {
   recurse(0, 0);
 };
 
+/*
 const permItems = (fn, ordered, n, array) =>
   perm(p => fn(p.map(e => array[e])), ordered, n, array.length);
 
-perm(jlog, true, 3, [1, 2, 1, 1]);
+perm(jlog, true, 3, [1, 1, 3, 1, 1]);
 perm(jlog, false, 2, 3);
 const r = [];
 perm(v => r.push(v), true, 2, 3);
 jlog({ l: r.length, r });
 permItems(jlog, true, 2, ["A", "B", "C", "D", "E"]);
+*/
 
 /*
 const occPoints = (me, [min = 1, max = 15]) => {
@@ -259,16 +259,21 @@ const occPucks = (me, [min = 1, max = 15]) => {
   return result;
 };
 
+const occCounts = me => {
+  for (var i = 0, r = []; i < me.length; i++) r.push([i, me[i]]);
+  return r;
+};
+
 const canGo = (opp, to) => to < opp.length && opp[to] < 2;
 
 const puckMoves = (opp, from, dice) => {
   for (
-    var d = 0, moves = [[], []], taken = [], to = from + dice[d];
+    var d = 0, moves = [], taken = [], to = from + dice[d];
     d < dice.length && to < opp.length && opp[to] < 2;
 
   ) {
     if (opp[to]) taken.push(to);
-    moves[d].push({ from, to, taken: taken.slice() });
+    moves[d] = { from, to, taken: taken.slice() };
     d++;
     to += dice[d];
   }
@@ -279,28 +284,30 @@ const validMoves = ({ dice, isWhite, points }) => {
   let result = [];
   let [d1, d2] = dice;
   [d1, d2] = [Math.min(d1, d2), Math.max(d1, d2)];
-  let dicex = d1 === d2 ? [[d1, d1, d1, d1]] : [[d1, d2], [d2, d1]];
+  let combos = d1 === d2 ? [[d1, d1, d1, d1]] : [[d1, d2], [d2, d1]];
   let [me, opp] = myPoints({ isWhite, points });
   const segMoves = [[[], []], [[], []], [[], []], [[], []]]; // singles/doubles
 
-  let starters = [1, dicex[0].length === 2 ? 2 : 4].map(i =>
-    occPucks(me, [1, i])
-  );
+  let starters = [1, combos[0].length].map(i => occPucks(me, [1, i]));
 
+  let p12o4 = [1, combos[0].length].map(limit => occCounts(me, [1, limit]));
+  jlog({ starters, p12o4 });
   if (d1 !== d2) {
-    dicex.forEach((die, d) =>
-      starters[0].forEach(s => {
-        const moves = puckMoves(opp, s, die);
-        jlog({ d, s, moves });
-        moves.forEach((g, i) => segMoves[i][d].push(g));
+    combos.forEach((combo, c) =>
+      starters[0].forEach(starter => {
+        const moves = puckMoves(opp, starter, combo);
+        moves.forEach((m1234, i) => segMoves[c][i].push(m1234));
+        jlog2({ c, combo, starter, moves });
       })
     );
-
-    segMoves.map((m, im) =>
-      m.map((g, ig) => jlog({ [`segMoves${im}${ig}`]: g }))
-    );
   }
-  /*
+
+  jlog2({ segMoves });
+
+  /*segMoves.map((m, im) =>
+    m.map((g, ig) => jlog({ [`segMoves${im}${ig}`]: g }))
+  );
+
     //const singles = dicex.map(d => starters[0].filter(e => canGo(opp, e + d)));
     //const doubles = singles.map(s => s.filter(e => canGo(opp, e + d1 + d2)));
     //const combos = permArray(dicex.length, starters[1], true);
@@ -310,12 +317,11 @@ const validMoves = ({ dice, isWhite, points }) => {
         result.push(d);
       }
     });
-    */
+  */
 
-  jlog({ dicex, segMoves, result });
+  jlog({ result });
 
   //jlog(permy(3, 1));
-
   //jlog(permArray(dice.length, starters[2]));
   //jlog(permArray(dice.length, starters[2]).map(p => p.map((e, i) => [e, dice[i]])));
   return result;

@@ -5,7 +5,7 @@ import Surface from "./components/surface";
 import Dice from "./components/dice";
 import Counter from "./components/counter";
 import GlobalCounter from "./components/gcounter";
-import { pips, validMoves } from "./engine/engine";
+import { validMoves } from "./engine/engine";
 import { StateProvider } from "./state";
 
 const logj = o => console.log(JSON.stringify(o));
@@ -38,9 +38,7 @@ export default function App() {
         return state;
     }
   };
-  console.log({ wpips: pips(0, state.points), bpips: pips(1, state.points) });
-  validMoves(state).forEach(logj);
-  //console.log(JSON.stringify(fromTo(validMoves(state)), null, 2));
+
   return (
     <StateProvider initialState={state} reducer={reducer}>
       <div className="App">

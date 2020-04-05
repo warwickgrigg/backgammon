@@ -1,5 +1,5 @@
 import occupation from "./occupation";
-import isBearOff from "./isBearOff";
+import laggard from "./laggard";
 
 const jlog = o => console.log(JSON.stringify(o));
 const jlog2 = o => console.log(JSON.stringify(o, null, 2));
@@ -7,46 +7,54 @@ const jlog2 = o => console.log(JSON.stringify(o, null, 2));
 const doMove = ([me, opp]) => (from, to, taken) => {
   me[from]--;
   me[to]++;
-  opp[0] += taken;
-  opp[25 - to] = 0;
+  if (taken) {
+    opp[0] += taken;
+    opp[25 - to] = 0;
+  }
 };
 
 const undoMove = ([me, opp]) => (from, to, taken) => {
   me[from]++;
   me[to]--;
-  opp[0] -= taken;
-  opp[25 - to] = taken;
+  if (taken) {
+    opp[0] -= taken;
+    opp[25 - to] = taken;
+  }
 };
 
 const walkMoves = (fn, [d1, d2], points) => {
   const [me, opp] = points;
   const [doM, undoM] = [doMove(points), undoMove(points)];
+  const myLaggard = laggard(me);
   const combos = d1 === d2 ? [[d1, d1, d1, d1]] : [[d1, d2], [d2, d1]];
   const end = combos[0].length - 1;
   const result = Array(combos[0].length);
-  const recurse = (r, from) => {
+  const recurse = (r, from, lagger) => {
     let hasPosted = false;
-    let to = from + combo[r];
-    let fromLimit = me[0] ? 1 : 25;
-    while (from < fromLimit && to < me.length) {
-      let taken = opp[25 - to];
+    let fromLimit = lagger ? 25 : 1;
+    while (from < fromLimit) {
+      let to = from + combo[r];
+      let taken = 0;
+      if (to >= me.length - 1) {
+        if (from === lagger) to = me.length - 1;
+        else from = fromLimit;
+      } else taken = opp[25 - to];
       if (me[from] && taken < 2) {
         result[r] = [from, to, taken];
         if (r === end) {
           fn(result.slice());
         } else {
           doM(from, to, taken);
-          if (!recurse(r + 1, from)) fn(result.slice());
+          if (!recurse(r + 1, from, myLaggard(lagger))) fn(result.slice());
           undoM(from, to, taken);
         }
         hasPosted = true;
       }
       from++;
-      to++;
     }
     return hasPosted;
   };
-  for (var combo of combos) recurse(0, 0);
+  for (var combo of combos) recurse(0, 0, myLaggard());
 };
 
 const validMoves = ({ dice, player, points }) => {
@@ -109,4 +117,4 @@ jlog(evaluate(testState));
 validMoves(testState).forEach(jlog);
 //console.log(JSON.stringify(fromTo(validMoves(state)), null, 2));
 
-export { pips, validMoves };
+export { pips, walkMoves };

@@ -20,7 +20,6 @@ const perm = (fn, ordered = false, n, count) => {
   recurse(0, 0);
 };
 
-/*
 const permItems = (fn, ordered, n, array) =>
   perm(p => fn(p.map(e => array[e])), ordered, n, array.length);
 
@@ -30,6 +29,5 @@ const r = [];
 perm(v => r.push(v), true, 2, 3);
 jlog({ l: r.length, r });
 permItems(jlog, true, 2, ["A", "B", "C", "D", "E"]);
-*/
 
 export default perm;

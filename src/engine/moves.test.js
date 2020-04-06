@@ -22,10 +22,25 @@ const testState = {
     ],
   ]
 };
-jlog({ validMoves: validMoves(testState) });
+//jlog({ validMoves: validMoves(testState) });
+const dice = {
+  diff: [1, 5],
+  double: [6, 6]
+};
 
-/*
-test("xtest", () => {
-  expect(validMoves(testState)).toEqual([2, 3]);
+test("2 point, dice diff", () => {
+  expect(validMoves({ ...testState, dice: dice.diff })).toEqual([
+    [[1, 2, 0], [1, 6, 1]],
+    [[1, 2, 0], [2, 7, 0]],
+    [[1, 6, 1], [6, 7, 0]]
+  ]);
 });
-*/
+
+test("2 point, dice same", () => {
+  expect(validMoves({ ...testState, dice: dice.same })).toEqual([
+    [[1, 2, 0], [1, 6, 1]],
+    [[1, 2, 0], [2, 7, 0]],
+    [[1, 6, 1], [6, 7, 0]]
+  ]);
+});
+jlog(validMoves({ ...testState, dice: dice.same }));

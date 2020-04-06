@@ -24,7 +24,7 @@ const movers = ([me, opp]) => ({
 
 const moves = fn => ({ dice, points, player }) => {
   let [d1, d2] = dice;
-  if (d2 > d1) [d1, d2] = [d2, d1];
+  if (d2 < d1) [d1, d2] = [d2, d1];
   const combos = d1 === d2 ? [[d1, d1, d1, d1]] : [[d1, d2], [d2, d1]];
   const [me, opp] = player === 0 ? points : [points[1], points[0]];
   const { doMove, undoMove } = movers([me, opp]);
@@ -49,14 +49,13 @@ const moves = fn => ({ dice, points, player }) => {
             r,
             combo,
             result,
-            offs: [opp[off - from - combo[0]], opp[off - from - combo[1]]]
+            offs: [result[0][2], opp[off - result[0][0] - combo[1]]]
           });
           if (
             combo[0] < combo[1] ||
             combo.length === 4 ||
             (result[0][1] === result[1][0] &&
-              opp[off - result[0][0] - combo[0]] !==
-                opp[off - result[0][0] - combo[1]])
+              result[0][2] !== opp[off - result[0][0] - combo[1]])
           )
             fn(result.slice());
         } else {

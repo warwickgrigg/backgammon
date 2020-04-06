@@ -5,10 +5,10 @@ import Surface from "./components/surface";
 import Dice from "./components/dice";
 import Counter from "./components/counter";
 import GlobalCounter from "./components/gcounter";
-import { validMoves } from "./engine/engine";
+import { validMoves } from "./engine/moves";
 import { StateProvider } from "./state";
 
-const logj = o => console.log(JSON.stringify(o));
+const jlog = o => console.log(JSON.stringify(o));
 
 export default function App() {
   const state = {
@@ -38,7 +38,7 @@ export default function App() {
         return state;
     }
   };
-
+  //jlog(validMoves(state));
   return (
     <StateProvider initialState={state} reducer={reducer}>
       <div className="App">

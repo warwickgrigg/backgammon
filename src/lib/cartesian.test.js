@@ -9,8 +9,8 @@ let stack = (a = []) => ({
   pop: () => a.pop()
 });
 
-jlog(cartesian(stack().push)([2, 3]));
-jlog(cartesianArrays(stack().push)([["A", "B", "C"], [0, 1], ["x", "y", "z"]]));
+//jlog(cartesian(stack().push)([2, 3]));
+//jlog(cartesianArrays(stack().push)([["A", "B", "C"], [0, 1], ["x", "y", "z"]]));
 
 test("cartesian lengths of 2 and 3", () => {
   expect(cartesian(stack().push)([2, 3])).toEqual([

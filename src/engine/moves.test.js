@@ -36,13 +36,11 @@ test("2 point, dice diff", () => {
   ]);
 });
 
-/*
 test("2 point, dice same", () => {
-  expect(validMoves({ ...testState, dice: dice.same })).toEqual([
+  expect(validMoves({ ...testState, dice: dice.double })).toEqual([
     [[1, 2, 0], [1, 6, 1]],
     [[1, 2, 0], [2, 7, 0]],
     [[1, 6, 1], [6, 7, 0]]
   ]);
 });
-jlog(validMoves({ ...testState, dice: dice.same }));
-*/
+jlog(validMoves({ ...testState, dice: dice.double }));

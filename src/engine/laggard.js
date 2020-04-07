@@ -1,4 +1,4 @@
 export default pucks => (from = 0) => {
-  while (from < 25) if (pucks[from++]) return from;
+  for (; from < 25; from++) if (pucks[from]) return from;
   return from;
 };

@@ -35,41 +35,48 @@ const moves = fn => ({ dice, points, player }) => {
   const recurse = (r, from, lagger) => {
     let hasPosted = false;
     let fromLimit = lagger ? off : 1;
+    console.log({ from, lagger, fromLimit });
     while (from < fromLimit) {
-      let to = from + combo[r];
-      let taken = 0;
-      if (to >= off) {
-        if (from !== lagger) break;
-        to = off;
-      } else taken = opp[off - to];
-      if (me[from] && taken < 2) {
-        result[r] = [from, to, taken];
-        if (r === end) {
-          jlog({
-            r,
-            combo,
-            result,
-            offs: [result[0][2], opp[off - result[0][0] - combo[1]]]
-          });
-          if (
-            combo[0] < combo[1] ||
-            combo.length === 4 ||
-            (result[0][1] === result[1][0] &&
-              result[0][2] !== opp[off - result[0][0] - combo[1]])
-          )
-            fn(result.slice());
+      if (me[from]) {
+        let to = from + combo[r];
+        let taken = 0;
+        if (to >= off) {
+          if (to > off && from !== lagger) break;
+          to = off;
         } else {
-          doMove(from, to, taken);
-          if (!recurse(r + 1, from, myLaggard(lagger))) fn(result.slice());
-          undoMove(from, to, taken);
+          taken = opp[off - to];
         }
-        hasPosted = true;
+        if (taken < 2) {
+          result[r] = [from, to, taken];
+          if (r === end) {
+            if (
+              combo[0] <= combo[1] || // must test for dup bouncing puck
+              from !== result[0][1] || // not bounce
+              result[0][2] !== opp[off - result[0][0] - combo[1]] // diff take
+            ) {
+              fn(result.slice());
+            }
+          } else {
+            doMove(from, to, taken);
+            hasPosted =
+              recurse(
+                r + 1,
+                combo[0] <= combo[1] ? from : from + 1, // dedup
+                myLaggard(lagger)
+              ) || hasPosted;
+            if (!hasPosted) fn(result.slice(0, r + 1));
+            undoMove(from, to, taken);
+          }
+          hasPosted = true;
+        }
       }
       from++;
     }
     return hasPosted;
   };
-  for (var combo of combos) recurse(0, 0, myLaggard());
+  for (var combo of combos) {
+    recurse(0, 0, myLaggard(0));
+  }
 };
 
 const validMoves = state => {

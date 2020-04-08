@@ -23,26 +23,26 @@ const movers = ([me, opp]) => ({
   }
 });
 
-const movesNew = fn => ({ dice, points, player }) => {
+const moves = fn => ({ dice, points, player }) => {
   const [me, opp] = player === 0 ? points : [points[1], points[0]];
   const { doMove, undoMove } = movers([me, opp]);
   let [d1, d2] = dice;
   if (d2 < d1) [d1, d2] = [d2, d1];
   const combos = d1 === d2 ? [[d1, d1, d1, d1]] : [[d1, d2], [d2, d1]];
-  let starts;
-  if (d1 === d2) starts = Array(4).fill([starters(d1, me)]);
+  if (d1 === d2) var starts = Array(4).fill([starters(d1, [me, opp])]);
   else {
-    starts = [starters(d1, me), starters(d2, me)];
+    starts = [starters(d1, [me, opp]), starters(d2, [me, opp])];
     starts = [[starts[0], starts[1]], [starts[1], starts[0]]];
   }
   const myLaggard = laggard(me);
   const end = combos[0].length - 1;
   const result = Array(combos[0].length);
   const off = me.length - 1;
+  var combo, d2starts;
   const recurse = (r, from, lagger) => {
     let hasPosted = false;
     let fromLimit = lagger ? off : 1;
-    console.log({ from, lagger, fromLimit });
+    //console.log({ from, lagger, fromLimit });
     while (from < fromLimit) {
       if (me[from]) {
         let to = from + combo[r];
@@ -73,8 +73,8 @@ const movesNew = fn => ({ dice, points, player }) => {
               ) || hasPosted;
             if (!hasPosted) fn(result.slice(0, r + 1));
             undoMove(from, to, taken);
+            hasPosted = true;
           }
-          hasPosted = true;
         }
       }
       from++;
@@ -82,12 +82,13 @@ const movesNew = fn => ({ dice, points, player }) => {
     return hasPosted;
   };
   for (let i = 0; i < combos.length; i++) {
-    var combo = combos[i];
+    combo = combos[i];
+    d2starts = starts[i][1];
+    //console.log({ starts });
     recurse(0, 0, myLaggard(0));
   }
 };
-
-const moves = fn => ({ dice, points, player }) => {
+const movesOld = fn => ({ dice, points, player }) => {
   let [d1, d2] = dice;
   if (d2 < d1) [d1, d2] = [d2, d1];
   const combos = d1 === d2 ? [[d1, d1, d1, d1]] : [[d1, d2], [d2, d1]];
@@ -97,10 +98,11 @@ const moves = fn => ({ dice, points, player }) => {
   const end = combos[0].length - 1;
   const result = Array(combos[0].length);
   const off = me.length - 1;
-  let hasPosted = false;
+
   const recurse = (r, from, lagger) => {
+    let hasPosted = false;
     let fromLimit = lagger ? off : 1;
-    console.log({ from, lagger, fromLimit });
+    //console.log({ from, lagger, fromLimit });
     while (from < fromLimit) {
       if (me[from]) {
         let to = from + combo[r];

@@ -17,6 +17,6 @@ for (let d1 = 1; d1 <= 6; d1++) {
 
 //gapHits.forEach(jlog);
 
-gapHits.forEach((a, i) => jlog([i, a.length]));
+//gapHits.forEach((a, i) => jlog([i, a.length]));
 
 export default gapHits;

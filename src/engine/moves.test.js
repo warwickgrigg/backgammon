@@ -25,6 +25,19 @@ const points = {
       13,  // off
     ],
   ],
+  blocking: [
+    [ // white
+      0, // on bar
+      1, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0,
+      1, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0,
+      15,  // off
+    ], [ // black
+      0, // on bar
+      0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0,    2, 0, 0, 0, 0, 0,
+      13,  // off
+    ],
+  ],
   onBarx1: [
     [ // white
       1, // on bar
@@ -38,7 +51,7 @@ const points = {
       13,  // off
     ],
   ],
-  onBarx2Blockedx1: [
+  onBarx2: [
     [ // white
       2, // on bar
       3, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0,
@@ -48,6 +61,19 @@ const points = {
       0, // on bar
       0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0,
       0, 0, 0, 0, 0, 0,    0, 1, 0, 0, 0, 0,
+      13,  // off
+    ],
+  ],
+  onBarx2Blockedx1: [
+    [ // white
+      2, // on bar
+      3, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0,
+      11,  // off
+    ], [ // black
+      0, // on bar
+      0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0,    0, 2, 0, 0, 0, 0,
       13,  // off
     ],
   ],
@@ -100,6 +126,16 @@ test("points onBar x 1, dice diff", () => {
   ).toEqual([[[0, 1, 0], [1, 6, 1]], [[0, 5, 0], [1, 2, 0]]]);
 });
 
+test("points onBar x 2, dice diff", () => {
+  expect(
+    validMoves({
+      ...testState,
+      points: points.onBarx2,
+      dice: dice.diff
+    })
+  ).toEqual([[[0, 1, 0], [0, 5, 1]]]);
+});
+
 test("points onBar x 2, Blocked x 1, dice diff", () => {
   expect(
     validMoves({
@@ -107,7 +143,7 @@ test("points onBar x 2, Blocked x 1, dice diff", () => {
       points: points.onBarx2Blockedx1,
       dice: dice.diff
     })
-  ).toEqual([[[0, 1, 0], [1, 6, 1]], [[0, 5, 0], [1, 2, 0]]]);
+  ).toEqual([[[0, 1, 0]]]);
 });
 
 test("points 1 x 4, dice double", () => {

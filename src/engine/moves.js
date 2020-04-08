@@ -1,4 +1,5 @@
 import laggard from "./laggard";
+import starters from "./starters";
 
 const jlog = o => console.log(JSON.stringify(o));
 const jlog2 = o => console.log(JSON.stringify(o, null, 2));
@@ -22,6 +23,70 @@ const movers = ([me, opp]) => ({
   }
 });
 
+const movesNew = fn => ({ dice, points, player }) => {
+  const [me, opp] = player === 0 ? points : [points[1], points[0]];
+  const { doMove, undoMove } = movers([me, opp]);
+  let [d1, d2] = dice;
+  if (d2 < d1) [d1, d2] = [d2, d1];
+  const combos = d1 === d2 ? [[d1, d1, d1, d1]] : [[d1, d2], [d2, d1]];
+  let starts;
+  if (d1 === d2) starts = Array(4).fill([starters(d1, me)]);
+  else {
+    starts = [starters(d1, me), starters(d2, me)];
+    starts = [[starts[0], starts[1]], [starts[1], starts[0]]];
+  }
+  const myLaggard = laggard(me);
+  const end = combos[0].length - 1;
+  const result = Array(combos[0].length);
+  const off = me.length - 1;
+  const recurse = (r, from, lagger) => {
+    let hasPosted = false;
+    let fromLimit = lagger ? off : 1;
+    console.log({ from, lagger, fromLimit });
+    while (from < fromLimit) {
+      if (me[from]) {
+        let to = from + combo[r];
+        let taken = 0;
+        if (to >= off) {
+          if (to > off && from !== lagger) break;
+          to = off;
+        } else {
+          taken = opp[off - to];
+        }
+        if (taken < 2) {
+          result[r] = [from, to, taken];
+          if (r === end) {
+            if (
+              combo[0] <= combo[1] || // must test for dup bouncing puck
+              from !== result[0][1] || // not bounce
+              result[0][2] !== opp[off - result[0][0] - combo[1]] // diff take
+            ) {
+              fn(result.slice());
+            }
+          } else {
+            doMove(from, to, taken);
+            hasPosted =
+              recurse(
+                r + 1,
+                combo[0] <= combo[1] ? from : from + 1, // dedup
+                myLaggard(lagger)
+              ) || hasPosted;
+            if (!hasPosted) fn(result.slice(0, r + 1));
+            undoMove(from, to, taken);
+          }
+          hasPosted = true;
+        }
+      }
+      from++;
+    }
+    return hasPosted;
+  };
+  for (let i = 0; i < combos.length; i++) {
+    var combo = combos[i];
+    recurse(0, 0, myLaggard(0));
+  }
+};
+
 const moves = fn => ({ dice, points, player }) => {
   let [d1, d2] = dice;
   if (d2 < d1) [d1, d2] = [d2, d1];
@@ -32,8 +97,8 @@ const moves = fn => ({ dice, points, player }) => {
   const end = combos[0].length - 1;
   const result = Array(combos[0].length);
   const off = me.length - 1;
+  let hasPosted = false;
   const recurse = (r, from, lagger) => {
-    let hasPosted = false;
     let fromLimit = lagger ? off : 1;
     console.log({ from, lagger, fromLimit });
     while (from < fromLimit) {

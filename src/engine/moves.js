@@ -1,10 +1,10 @@
 import laggard from "./laggard";
-import starters from "./starters";
+import movers from "./movers";
 
 const jlog = o => console.log(JSON.stringify(o));
 const jlog2 = o => console.log(JSON.stringify(o, null, 2));
 
-const movers = ([me, opp]) => ({
+const moveOps = ([me, opp]) => ({
   doMove: (from, to, taken) => {
     me[from]--;
     me[to]++;
@@ -25,30 +25,29 @@ const movers = ([me, opp]) => ({
 
 const moves = fn => ({ dice, points, player }) => {
   const [me, opp] = player === 0 ? points : [points[1], points[0]];
-  const { doMove, undoMove } = movers([me, opp]);
+  const { doMove, undoMove } = moveOps([me, opp]);
   let [d1, d2] = dice;
   if (d2 < d1) [d1, d2] = [d2, d1];
   const combos = d1 === d2 ? [[d1, d1, d1, d1]] : [[d1, d2], [d2, d1]];
-  if (d1 === d2) var starts = Array(4).fill([starters(d1, [me, opp])]);
-  else {
-    starts = [starters(d1, [me, opp]), starters(d2, [me, opp])];
-    starts = [[starts[0], starts[1]], [starts[1], starts[0]]];
-  }
+  var starters = movers([me, opp], combos[0]).map(a => a[0].concat(a[1]));
+  if (d1 !== d2) starters = [starters, [starters[1], starters[0]]];
   const myLaggard = laggard(me);
   const end = combos[0].length - 1;
   const result = Array(combos[0].length);
   const off = me.length - 1;
-  var combo, d2starts;
-  const recurse = (r, from, lagger) => {
-    let hasPosted = false;
-    let fromLimit = lagger ? off : 1;
-    //console.log({ from, lagger, fromLimit });
-    while (from < fromLimit) {
+  let c; // comboNo
+  jlog({ starters });
+
+  const recurse = (r, s, tail) => {
+  ssss;ksajksdkj
+    for (var hasPosted = false; tail > s < starters[c][r].length; s++) {
+      let from = starters[c][r][s];
+      jlog({ c, r, s, from, result });
       if (me[from]) {
-        let to = from + combo[r];
+        let to = from + combos[c][r];
         let taken = 0;
         if (to >= off) {
-          if (to > off && from !== lagger) break;
+          if (to > off && from !== tail) break;
           to = off;
         } else {
           taken = opp[off - to];
@@ -57,34 +56,33 @@ const moves = fn => ({ dice, points, player }) => {
           result[r] = [from, to, taken];
           if (r === end) {
             if (
-              combo[0] <= combo[1] || // must test for dup bouncing puck
-              from !== result[0][1] || // not bounce
-              result[0][2] !== opp[off - result[0][0] - combo[1]] // diff take
+              true ||
+              combos[c][0] <= combos[c][1] || // must test for dup bouncing puck
+              result[0][1] !== result[1][0] || // not bounce
+              result[0][2] !== opp[off - result[0][0] - combos[c][1]] // diff take
             ) {
               fn(result.slice());
             }
           } else {
             doMove(from, to, taken);
+            starters[c][r + 1].push(to);
             hasPosted =
               recurse(
                 r + 1,
-                combo[0] <= combo[1] ? from : from + 1, // dedup
-                myLaggard(lagger)
+                combos[c][0] <= combos[c][1] ? s : s + 1,
+                myLaggard(tail)
               ) || hasPosted;
-            if (!hasPosted) fn(result.slice(0, r + 1));
+            if (!hasPosted) fn(result.slice(0, r));
+            starters[c][r + 1].pop();
             undoMove(from, to, taken);
-            hasPosted = true;
           }
+          hasPosted = true;
         }
       }
-      from++;
     }
     return hasPosted;
   };
-  for (let i = 0; i < combos.length; i++) {
-    combo = combos[i];
-    d2starts = starts[i][1];
-    //console.log({ starts });
+  for (c = 0; c < combos.length; c++) {
     recurse(0, 0, myLaggard(0));
   }
 };
@@ -93,7 +91,7 @@ const movesOld = fn => ({ dice, points, player }) => {
   if (d2 < d1) [d1, d2] = [d2, d1];
   const combos = d1 === d2 ? [[d1, d1, d1, d1]] : [[d1, d2], [d2, d1]];
   const [me, opp] = player === 0 ? points : [points[1], points[0]];
-  const { doMove, undoMove } = movers([me, opp]);
+  const { doMove, undoMove } = moveOps([me, opp]);
   const myLaggard = laggard(me);
   const end = combos[0].length - 1;
   const result = Array(combos[0].length);
@@ -154,4 +152,4 @@ const validMoves = state => {
   return result;
 };
 
-export { moves, movers, validMoves };
+export { moves, moveOps, validMoves };

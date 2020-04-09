@@ -14,7 +14,7 @@ export default function App() {
   const state = {
     counter: 0,
     dice: [1, 5],
-    isWhite: true, // 1 for white, 0 for black
+    player: 0, // 0 for white, 1 for black
     // prettier-ignore
     points: [
       [ // white
@@ -38,7 +38,7 @@ export default function App() {
         return state;
     }
   };
-  //jlog(validMoves(state));
+  jlog(validMoves(state));
   return (
     <StateProvider initialState={state} reducer={reducer}>
       <div className="App">

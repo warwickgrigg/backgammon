@@ -18,14 +18,58 @@ const points = {
 };
 
 test("mover options, blocker on 22, two dice", () => {
-  expect(movers(points.case1, [1, 2])).toEqual([
-    [[0, 19, 20, 22, 23], [24]],
-    [[0, 19, 21, 22], [23, 24]]
-  ]);
+  expect(movers(points.case1, [1, 2])).toEqual(
+    //prettier-ignore
+    [
+      {
+        end: 24,
+        enders: [24],
+        landers: [
+          true,
+          true, true, true, true, true, true,
+          true, true, true, true, true, true,
+          true, true, true, true, true, true,
+          true, true, false, true, true, true,
+          false
+        ],
+        starters: [0, 19, 20, 22, 23]
+      },
+      {
+        end: 23,
+        enders: [23, 24],
+        landers: [
+          true,
+          true, true, true, true, true, true,
+          true, true, true, true, true, true,
+          true, true, true, true, true, true,
+          true, false, true, true, true, true,
+          false
+        ],
+        starters: [0, 19, 21, 22]
+      }
+    ]
+  );
 });
 
 test("mover options, blocker on 22, one dice", () => {
-  expect(movers(points.case1, [2])).toEqual([[[0, 19, 21, 22], [23, 24]]]);
+  expect(movers(points.case1, [2])).toEqual(
+    //prettier-ignore
+    [
+      {
+        end: 23,
+        enders: [23, 24],
+        landers: [
+          true,
+          true, true, true, true, true, true,
+          true, true, true, true, true, true,
+          true, true, true, true, true, true,
+          true, false, true, true, true, true,
+          false
+        ],
+        starters: [0, 19, 21, 22]
+      }
+    ]
+  );
 });
 
 /*

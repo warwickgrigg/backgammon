@@ -26,11 +26,10 @@ const moveOps = ([me, opp]) => ({
 const moves = fn => ({ dice, points, player }) => {
   const [me, opp] = player === 0 ? points : [points[1], points[0]];
   const { doMove, undoMove } = moveOps([me, opp]);
-  let [d1, d2] = dice;
-  if (d2 < d1) [d1, d2] = [d2, d1];
+  const [d1, d2] = dice[0] < dice[1] ? dice : [dice[1], dice[0]];
   const combos = d1 === d2 ? [[d1, d1, d1, d1]] : [[d1, d2], [d2, d1]];
   let m = movers([me, opp], combos[0]);
-  if (d1 !== d2) [m[0].landers, m[1].landers] = [m[1].landers, m[0].landers];
+  if (d1 !== d2) [m[0].hot, m[1].hot] = [m[1].hot, m[0].hot];
   const myLaggard = laggard(me);
   const end = combos[0].length - 1;
   const result = Array(combos[0].length);
@@ -38,34 +37,32 @@ const moves = fn => ({ dice, points, player }) => {
   let c, combo; // comboNo
   jlog({ starters0: m[0].starters });
 
+  const notDup = () =>
+    combo[0] <= combo[1] || // must test for dup bouncing puck
+    result[0][1] !== result[1][0] || // not bounce
+    result[0][2] !== opp[off - result[0][0] - combo[1]]; // diff take
+
   const recurse = (r, s, tail) => {
     for (var hasPosted = false; s < (me[0] ? 1 : m[r].starters.length); s++) {
       let from = m[r].starters[s];
       jlog({ c, r, s, from, result });
-      if (me[from]) {
-        let to = from + combos[c][r];
-        let taken = opp[off - to];
-        result[r] = [from, to, taken];
-        if (r === end) {
-          if (
-            combo[0] <= combo[1] || // must test for dup bouncing puck
-            result[0][1] !== result[1][0] || // not bounce
-            result[0][2] !== opp[off - result[0][0] - combo[1]] // diff take
-          ) {
-            fn(result.slice());
-          }
-        } else {
-          doMove(from, to, taken);
-          m[r + 1].starters.push(to);
-          hasPosted =
-            recurse(r + 1, combo[0] <= combo[1] ? s : s + 1, myLaggard(tail)) ||
-            hasPosted;
-          if (!hasPosted) fn(result.slice(0, r));
-          m[r + 1].starters.pop();
-          undoMove(from, to, taken);
-        }
-        hasPosted = true;
+      if (!me[from]) break;
+      let to = from + combo[r];
+      let taken = opp[off - to];
+      result[r] = [from, to, taken];
+      if (r === end) {
+        if (notDup()) fn(result.slice());
+      } else {
+        if (!me[to] && m[r + 1].hot[to]) m[r + 1].starters.push(to);
+        doMove(from, to, taken);
+        hasPosted =
+          recurse(r + 1, combo[0] <= combo[1] ? s : s + 1, myLaggard(tail)) ||
+          hasPosted;
+        if (!hasPosted) fn(result.slice(0, r));
+        undoMove(from, to, taken);
+        if (!me[to] && m[r + 1].hot[to]) m[r + 1].starters.pop();
       }
+      hasPosted = true;
     }
     return hasPosted;
   };

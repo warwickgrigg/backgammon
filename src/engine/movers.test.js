@@ -24,7 +24,7 @@ test("mover options, blocker on 22, two dice", () => {
       {
         end: 24,
         enders: [24],
-        landers: [
+        hot: [
           true,
           true, true, true, true, true, true,
           true, true, true, true, true, true,
@@ -37,7 +37,7 @@ test("mover options, blocker on 22, two dice", () => {
       {
         end: 23,
         enders: [23, 24],
-        landers: [
+        hot: [
           true,
           true, true, true, true, true, true,
           true, true, true, true, true, true,
@@ -58,7 +58,7 @@ test("mover options, blocker on 22, one dice", () => {
       {
         end: 23,
         enders: [23, 24],
-        landers: [
+        hot: [
           true,
           true, true, true, true, true, true,
           true, true, true, true, true, true,

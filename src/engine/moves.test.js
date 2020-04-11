@@ -125,7 +125,7 @@ test("points onBar x 1, dice diff", () => {
     validMoves({ ...testState, points: points.onBarx1, dice: dice.diff })
   ).toEqual([[[0, 1, 0], [1, 6, 1]], [[0, 5, 0], [1, 2, 0]]]);
 });
-
+/*
 test("points onBar x 2, dice diff", () => {
   expect(
     validMoves({
@@ -181,3 +181,4 @@ test("points startBearOff, dice diff", () => {
   ]);
 });
 jlog(validMoves({ ...testState, dice: dice.double }));
+*/

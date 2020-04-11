@@ -27,14 +27,13 @@ const moves = fn => ({ dice, points, player }) => {
   const [me, opp] = player === 0 ? points : [points[1], points[0]];
   const { doMove, undoMove } = moveOps([me, opp]);
   const [d1, d2] = dice[0] < dice[1] ? dice : [dice[1], dice[0]];
-  const combos = d1 === d2 ? [[d1, d1, d1, d1]] : [[d1, d2], [d2, d1]];
-  let m = movers([me, opp], combos[0]);
-  if (d1 !== d2) [m[0].hot, m[1].hot] = [m[1].hot, m[0].hot];
+  let combo = d1 === d2 ? [d1, d1, d1, d1] : [d1, d2];
+  let m = movers([me, opp], combo);
+  //if (d1 !== d2) [m[0].hot, m[1].hot] = [m[1].hot, m[0].hot];
   const myLaggard = laggard(me);
-  const end = combos[0].length - 1;
-  const result = Array(combos[0].length);
+  const end = combo.length - 1;
+  const result = Array(combo.length);
   const off = me.length - 1;
-  let c, combo; // comboNo
   jlog({ starters0: m[0].starters });
 
   const notDup = () =>
@@ -43,23 +42,23 @@ const moves = fn => ({ dice, points, player }) => {
     result[0][1] !== result[1][0] || // not bounce
     result[0][2] !== opp[off - result[0][0] - combo[1]]; // diff take
 
+  const nextS = s => (combo[0] <= combo[1] ? s : s);
   const recurse = (r, s, tail) => {
     for (var hasPosted = false; s < (me[0] ? 1 : m[r].starters.length); s++) {
       let from = m[r].starters[s];
-      jlog({ c, r, s, from, result });
+      jlog({ combo, r, s, from, result, hasPosted });
       if (!me[from]) break;
       let to = from + combo[r];
+      if (to > 24 && from > tail) break;
       let taken = opp[off - to];
       result[r] = [from, to, taken];
       if (r === end) {
         if (notDup()) fn(result.slice());
       } else {
-        let pushValue = !me[to] && m[r].hot[to] && to;
+        let pushValue = !me[to] && m[r + 1].hot[to] && to;
         if (pushValue) m[r + 1].starters.push(pushValue);
         doMove(from, to, taken);
-        hasPosted =
-          recurse(r + 1, combo[0] <= combo[1] ? s : s + 1, myLaggard(tail)) ||
-          hasPosted;
+        hasPosted = recurse(r + 1, nextS(s), myLaggard(tail)) || hasPosted;
         if (!hasPosted) fn(result.slice(0, r));
         undoMove(from, to, taken);
         if (pushValue) m[r + 1].starters.pop();
@@ -68,10 +67,11 @@ const moves = fn => ({ dice, points, player }) => {
     }
     return hasPosted;
   };
-  for (c = 0; c < combos.length; c++) {
-    combo = combos[c];
+  recurse(0, 0, myLaggard(0));
+  if (d1 !== d2) {
+    m = [m[1], m[0]];
+    combo = [d2, d1];
     recurse(0, 0, myLaggard(0));
-    if (combos.length > 1) m = [m[1], m[0]];
   }
 };
 const movesOld = fn => ({ dice, points, player }) => {

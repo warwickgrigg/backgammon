@@ -157,7 +157,7 @@ test("points 1 x 4, dice double", () => {
     [[1, 6, 1], [6, 11, 0], [11, 16, 0], [16, 21, 0]]
   ]);
 });
-/*
+
 test("points allHome, dice diff", () => {
   expect(
     validMoves({ ...testState, points: points.allHome, dice: dice.diff })
@@ -181,4 +181,3 @@ test("points startBearOff, dice diff", () => {
   ]);
 });
 jlog(validMoves({ ...testState, dice: dice.double }));
-*/

@@ -125,7 +125,7 @@ test("points onBar x 1, dice diff", () => {
     validMoves({ ...testState, points: points.onBarx1, dice: dice.diff })
   ).toEqual([[[0, 1, 0], [1, 6, 1]], [[0, 5, 0], [1, 2, 0]]]);
 });
-/*
+
 test("points onBar x 2, dice diff", () => {
   expect(
     validMoves({
@@ -157,7 +157,7 @@ test("points 1 x 4, dice double", () => {
     [[1, 6, 1], [6, 11, 0], [11, 16, 0], [16, 21, 0]]
   ]);
 });
-
+/*
 test("points allHome, dice diff", () => {
   expect(
     validMoves({ ...testState, points: points.allHome, dice: dice.diff })

@@ -38,6 +38,7 @@ const moves = fn => ({ dice, points, player }) => {
   jlog({ starters0: m[0].starters });
 
   const notDup = () =>
+    //true ||
     combo[0] <= combo[1] || // must test for dup bouncing puck
     result[0][1] !== result[1][0] || // not bounce
     result[0][2] !== opp[off - result[0][0] - combo[1]]; // diff take
@@ -53,14 +54,15 @@ const moves = fn => ({ dice, points, player }) => {
       if (r === end) {
         if (notDup()) fn(result.slice());
       } else {
-        if (!me[to] && m[r + 1].hot[to]) m[r + 1].starters.push(to);
+        let pushValue = !me[to] && m[r].hot[to] && to;
+        if (pushValue) m[r + 1].starters.push(pushValue);
         doMove(from, to, taken);
         hasPosted =
           recurse(r + 1, combo[0] <= combo[1] ? s : s + 1, myLaggard(tail)) ||
           hasPosted;
         if (!hasPosted) fn(result.slice(0, r));
         undoMove(from, to, taken);
-        if (!me[to] && m[r + 1].hot[to]) m[r + 1].starters.pop();
+        if (pushValue) m[r + 1].starters.pop();
       }
       hasPosted = true;
     }

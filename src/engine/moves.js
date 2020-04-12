@@ -26,12 +26,9 @@ const moveOps = ([me, opp]) => ({
 const moves = fn => ({ dice: d, points, player }) => {
   const [me, opp] = player === 0 ? points : [points[1], points[0]];
   const { doMove, undoMove } = moveOps([me, opp]);
-  const combo =
-    d[0] === d[1]
-      ? [d[0], d[0], d[0], d[0]]
-      : d[0] > d[1]
-      ? [d[1], d[0]]
-      : d.slice();
+  //prettier-ignore
+  const combo = d[0] === d[1] ? [d[0], d[0], d[0], d[0]] 
+    : d[0] > d[1] ? [d[1], d[0]] : d.slice();
   const g = goers([me, opp], combo);
   const myLaggard = laggard(me);
   const end = combo.length - 1;

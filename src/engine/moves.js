@@ -1,11 +1,11 @@
 import laggard from "./laggard";
-import movers from "./movers";
+import goers from "./goers";
 
 const jlog = o => console.log(JSON.stringify(o));
 const jlog2 = o => console.log(JSON.stringify(o, null, 2));
 
 const moveOps = ([me, opp]) => ({
-  doMove: (from, to, taken) => {
+  doMove: ({ from, to, taken }) => {
     me[from]--;
     me[to]++;
     if (taken) {
@@ -13,7 +13,7 @@ const moveOps = ([me, opp]) => ({
       opp[25 - to] = 0;
     }
   },
-  undoMove: (from, to, taken) => {
+  undoMove: ({ from, to, taken }) => {
     me[from]++;
     me[to]--;
     if (taken) {
@@ -32,58 +32,60 @@ const moves = fn => ({ dice: d, points, player }) => {
       : d[0] > d[1]
       ? [d[1], d[0]]
       : d.slice();
-  const m = movers([me, opp], combo);
+  const g = goers([me, opp], combo);
   const myLaggard = laggard(me);
   const end = combo.length - 1;
-  const result = Array(combo.length);
+  const result = Array.from(new Array(combo.length), () => ({}));
   const off = me.length - 1;
-  jlog({ m });
+  jlog({ g });
 
   const isDup = () => {
     if (combo.length !== 2) return false; // doubles and single die
     if (combo[0] <= combo[1]) return false; // not second pass
-    if (result[0][0] === result[1][0]) return true; // same from
+    if (result[0].from === result[1].from) return true;
     return (
-      result[0][1] === result[1][0] && // is bounce
-      result[0][2] === opp[off - result[0][0] - combo[1]] // ssame take
+      result[0].to === result[1].from && // is bounce
+      result[0].taken === opp[off - result[0].taken - combo[1]] // same take
     );
   };
 
+  const post = a => fn(a.map(({ from: f, to: t, taken: n }) => [f, t, n]));
+
   const recurse = (r, s, tail) => {
-    jlog({ entryWith: { r, s, tail } });
-    const slen = tail ? m[r].starters.length : m[r].starters[0] > 0 ? 0 : 1;
+    //jlog({ entryWith: { r, s, tail } });
+    const slen = tail ? g[r].goers.length : g[r].goers[0] ? 0 : 1;
     for (var hasPosted = false; s < slen; s++) {
-      const from = m[r].starters[s];
-      jlog({ combo, bar: me[0], r, from, result });
-      if (!me[from]) continue;
-      let to = from + combo[r];
-      let taken = 0;
-      if (to >= off) {
+      const m = result[r]; // the new move
+      m.from = g[r].goers[s];
+      //jlog({ combo, bar: me[0], r, from: m.from, result });
+      if (!me[m.from]) continue;
+      m.to = m.from + combo[r];
+      if (m.to >= off) {
         if (tail < 19) continue; // not all home
-        if (to > off && from > tail) continue;
-        to = off;
-      } else taken = opp[off - to];
-      result[r] = [from, to, taken];
-      jlog({ combo, bar: me[0], from, to, r, result });
+        if (m.to > off && m.from > tail) continue;
+        m.to = off;
+        m.taken = 0;
+      } else m.taken = opp[off - m.to];
+      //jlog({ combo, bar: me[0], ...m, r, result });
       if (r === end) {
-        if (!isDup()) fn(result.slice());
+        if (!isDup()) post(result);
       } else {
-        const pushValue = !me[to] && m[r + 1].hot[to] ? to : 0;
-        if (pushValue) m[r + 1].starters.push(pushValue);
-        doMove(from, to, taken);
+        const pushValue = !me[m.to] && g[r + 1].hot[m.to] ? m.to : 0;
+        if (pushValue) g[r + 1].goers.push(pushValue);
+        doMove(m);
         hasPosted = recurse(r + 1, s, myLaggard(tail)) || hasPosted;
-        if (!hasPosted) fn(result.slice(0, r + 1));
-        undoMove(from, to, taken);
-        if (pushValue) m[r + 1].starters.pop();
+        if (!hasPosted) post(result.slice(0, r + 1));
+        undoMove(m);
+        if (pushValue) g[r + 1].goers.pop();
       }
       hasPosted = true;
     }
-    jlog({ exitAt: { s, from: m[r].starters[s], hasPosted } });
+    //jlog({ exitAt: { s, from: g[r].goers[s], hasPosted } });
     return hasPosted;
   };
   recurse(0, 0, myLaggard(0));
   if (combo.length === 2) {
-    [m[0], m[1]] = [m[1], m[0]];
+    [g[0], g[1]] = [g[1], g[0]];
     [combo[0], combo[1]] = [combo[1], combo[0]];
     recurse(0, 0, myLaggard(0));
   }

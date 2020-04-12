@@ -1,4 +1,4 @@
-import movers from "./movers";
+import goers from "./goers";
 
 // prettier-ignore
 const points = {
@@ -18,7 +18,7 @@ const points = {
 };
 
 test("mover options, blocker on 22, two dice", () => {
-  expect(movers(points.case1, [1, 2])).toEqual(
+  expect(goers(points.case1, [1, 2])).toEqual(
     //prettier-ignore
     [
       {
@@ -30,7 +30,7 @@ test("mover options, blocker on 22, two dice", () => {
           true, true, false, true, true, true,
           false
         ],
-        starters: [0, 19, 20, 22, 23, 24]
+        goers: [0, 19, 20, 22, 23, 24]
       },
       {
         hot: [
@@ -41,14 +41,14 @@ test("mover options, blocker on 22, two dice", () => {
           true, false, true, true, true, true,
           false
         ],
-        starters: [0, 19, 21, 22, 23, 24]
+        goers: [0, 19, 21, 22, 23, 24]
       }
     ]
   );
 });
 
 test("mover options, blocker on 22, one dice", () => {
-  expect(movers(points.case1, [2])).toEqual(
+  expect(goers(points.case1, [2])).toEqual(
     //prettier-ignore
     [
       {
@@ -60,7 +60,7 @@ test("mover options, blocker on 22, one dice", () => {
           true, false, true, true, true, true,
           false
         ],
-        starters: [0, 19, 21, 22, 23, 24]
+        goers: [0, 19, 21, 22, 23, 24]
       }
     ]
   );
@@ -68,7 +68,7 @@ test("mover options, blocker on 22, one dice", () => {
 
 /*
 test("mover options, blocker on 22, double", () => {
-  expect(movers(points.case1, [1, 1, 1, 1])).toEqual([
+  expect(goers(points.case1, [1, 1, 1, 1])).toEqual([
     [[[0, 19, 20, 22, 23], [24]]],
     //prettier-ignore
     [

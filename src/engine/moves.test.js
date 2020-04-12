@@ -1,10 +1,10 @@
 import { validMoves } from "./moves";
+import toBoard from "./toBoard";
 
 const jlog = o => console.log(JSON.stringify(o));
 const jlog2 = o => console.log(JSON.stringify(o, null, 2));
 
 const testState = {
-  counter: 0,
   dice: [1, 5],
   player: 0, // 0 for white, 1 for black
   points: [[], []] // white's, black's
@@ -109,6 +109,13 @@ const dice = {
   diff: [1, 5],
   double: [5, 5]
 };
+
+console.log({ toBoard: toBoard("1w") });
+test("simple", () => {
+  expect(validMoves({ player: 0, points: toBoard("1w"), dice: [1] })).toEqual([
+    [[0, 2, 0]]
+  ]);
+});
 
 test("points 1 x 4, dice diff", () => {
   expect(

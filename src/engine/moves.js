@@ -23,11 +23,15 @@ const moveOps = ([me, opp]) => ({
   }
 });
 
-const moves = fn => ({ dice, points, player }) => {
+const moves = fn => ({ dice: d, points, player }) => {
   const [me, opp] = player === 0 ? points : [points[1], points[0]];
   const { doMove, undoMove } = moveOps([me, opp]);
-  const [d1, d2] = dice[0] < dice[1] ? dice : [dice[1], dice[0]];
-  const combo = d1 === d2 ? [d1, d1, d1, d1] : [d1, d2];
+  const combo =
+    d[0] === d[1]
+      ? [d[0], d[0], d[0], d[0]]
+      : d[0] > d[1]
+      ? [d[1], d[0]]
+      : d.slice();
   const m = movers([me, opp], combo);
   const myLaggard = laggard(me);
   const end = combo.length - 1;
@@ -52,8 +56,8 @@ const moves = fn => ({ dice, points, player }) => {
       jlog({ combo, bar: me[0], r, from, result });
       if (!me[from]) continue;
       const to = from + combo[r];
-      if (to > 24 && from > tail) continue;
-      const taken = opp[off - to];
+      if (to >= off && from > tail) continue;
+      const taken = to >= off ? 0 : opp[off - to];
       result[r] = [from, to, taken];
       jlog({ combo, bar: me[0], from, to, r, result });
       if (r === end) {
@@ -73,9 +77,9 @@ const moves = fn => ({ dice, points, player }) => {
     return hasPosted;
   };
   recurse(0, 0, myLaggard(0));
-  if (d1 !== d2) {
+  if (combo.length === 2) {
     [m[0], m[1]] = [m[1], m[0]];
-    [combo[0], combo[1]] = [d2, d1];
+    [combo[0], combo[1]] = [combo[1], combo[0]];
     recurse(0, 0, myLaggard(0));
   }
 };

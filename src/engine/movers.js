@@ -8,7 +8,7 @@ export default (meopp, eDice = [1, 2]) => {
       if (opp[bear - from] > 1) hot[from] = false;
       else if (me[from]) starters.push(from);
     for (; from < off; from++) if (me[from]) starters.push(from);
-    return { starters, hot, bear };
+    return { starters, hot };
   };
   const l = eDice.length;
   const uniqDice = l === 2 ? eDice : [eDice[0]];

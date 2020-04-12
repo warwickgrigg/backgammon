@@ -22,7 +22,6 @@ test("mover options, blocker on 22, two dice", () => {
     //prettier-ignore
     [
       {
-        bear: 24,
         hot: [
           true,
           true, true, true, true, true, true,
@@ -34,7 +33,6 @@ test("mover options, blocker on 22, two dice", () => {
         starters: [0, 19, 20, 22, 23, 24]
       },
       {
-        bear: 23,
         hot: [
           true,
           true, true, true, true, true, true,
@@ -54,7 +52,6 @@ test("mover options, blocker on 22, one dice", () => {
     //prettier-ignore
     [
       {
-        bear: 23,
         hot: [
           true,
           true, true, true, true, true, true,

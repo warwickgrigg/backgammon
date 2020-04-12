@@ -12,7 +12,7 @@ export default a => {
       ]);
   }
   a.forEach(([position, color, count]) => {
-    const p = position * (1 - color) + 25 * color;
+    const p = color ? 25 - position : position;
     onboardCount[color] += count - board[color][p];
     board[color][p] = count;
   });

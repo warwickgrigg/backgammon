@@ -40,7 +40,8 @@ const moves = fn => ({ dice: d, points, player }) => {
   jlog({ m });
 
   const isDup = () => {
-    if (combo[0] <= combo[1]) return false; // not first time
+    if (combo.length !== 2) return false; // doubles and single die
+    if (combo[0] <= combo[1]) return false; // not second pass
     if (result[0][0] === result[1][0]) return true; // same from
     return (
       result[0][1] === result[1][0] && // is bounce
@@ -55,9 +56,13 @@ const moves = fn => ({ dice: d, points, player }) => {
       const from = m[r].starters[s];
       jlog({ combo, bar: me[0], r, from, result });
       if (!me[from]) continue;
-      const to = from + combo[r];
-      if (to >= off && from > tail) continue;
-      const taken = to >= off ? 0 : opp[off - to];
+      let to = from + combo[r];
+      let taken = 0;
+      if (to >= off) {
+        if (tail < 19) continue; // not all home
+        if (to > off && from > tail) continue;
+        to = off;
+      } else taken = opp[off - to];
       result[r] = [from, to, taken];
       jlog({ combo, bar: me[0], from, to, r, result });
       if (r === end) {
@@ -83,69 +88,10 @@ const moves = fn => ({ dice: d, points, player }) => {
     recurse(0, 0, myLaggard(0));
   }
 };
-const movesOld = fn => ({ dice, points, player }) => {
-  let [d1, d2] = dice;
-  if (d2 < d1) [d1, d2] = [d2, d1];
-  const combos = d1 === d2 ? [[d1, d1, d1, d1]] : [[d1, d2], [d2, d1]];
-  const [me, opp] = player === 0 ? points : [points[1], points[0]];
-  const { doMove, undoMove } = moveOps([me, opp]);
-  const myLaggard = laggard(me);
-  const end = combos[0].length - 1;
-  const result = Array(combos[0].length);
-  const off = me.length - 1;
-
-  const recurse = (r, from, lagger) => {
-    let hasPosted = false;
-    let fromLimit = lagger ? off : 1;
-    //console.log({ from, lagger, fromLimit });
-    while (from < fromLimit) {
-      if (me[from]) {
-        let to = from + combo[r];
-        let taken = 0;
-        if (to >= off) {
-          if (to > off && from !== lagger) break;
-          to = off;
-        } else {
-          taken = opp[off - to];
-        }
-        if (taken < 2) {
-          result[r] = [from, to, taken];
-          if (r === end) {
-            if (
-              combo[0] <= combo[1] || // must test for dup bouncing puck
-              from !== result[0][1] || // not bounce
-              result[0][2] !== opp[off - result[0][0] - combo[1]] // diff take
-            ) {
-              fn(result.slice());
-            }
-          } else {
-            doMove(from, to, taken);
-            hasPosted =
-              recurse(
-                r + 1,
-                combo[0] <= combo[1] ? from : from + 1, // dedup
-                myLaggard(lagger)
-              ) || hasPosted;
-            if (!hasPosted) fn(result.slice(0, r + 1));
-            undoMove(from, to, taken);
-          }
-          hasPosted = true;
-        }
-      }
-      from++;
-    }
-    return hasPosted;
-  };
-  for (var combo of combos) {
-    recurse(0, 0, myLaggard(0));
-  }
-};
 
 const validMoves = state => {
   const result = [];
   moves(v => result.push(v))(state);
-  //result.sort();
-  //jlog({ result, len: result.length });
   return result;
 };
 

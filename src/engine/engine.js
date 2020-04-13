@@ -7,8 +7,20 @@ const jlog2 = o => console.log(JSON.stringify(o, null, 2));
 
 const pips = xys => xys.reduce((a, [x, y]) => a + (25 - x) * y, 0);
 
-const doubles = xys => {
-  for (var i = 0, start, result = []; i < xys.length; i++) {}
+const doubles = (me, occs) => occs.reduce((a, c) => (me[c] > 1 ? a + 1 : a), 0);
+const blocks = (me, occs) => {
+  const result = [];
+  for (let i = 0; i < occs.length; ) {
+    if (me[occs[i]] > 1) {
+      for (
+        var j = i + 1;
+        j < occs.length && occs[j] === occs[i] + j - i && me[occs[j]] > 1;
+        j++
+      );
+      result[i] = (result[i] || 0) + 1;
+      i = j;
+    } else i++;
+  }
 };
 
 const allHomeCount = 25 * 15;

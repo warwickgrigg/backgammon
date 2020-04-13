@@ -4,8 +4,8 @@ export default xys => {
     [0, 0, 0]
   );
   const nzCount = count - 1 || 1;
-  const mean = sum / nzCount;
-  const variance = squares / nzCount - mean * mean;
+  const mean = sum / count;
+  const variance = squares / count - mean * mean;
   const sd = variance ** 0.5;
   return { count, sum, squares, mean, variance, sd };
 };

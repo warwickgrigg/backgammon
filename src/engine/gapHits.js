@@ -5,7 +5,8 @@ for (let d1 = 1; d1 <= 6; d1++) {
     if (d1 === d2) {
       for (let sum = 0, i = 0; i < 4; i++) {
         sum += d1;
-        gapHits[sum].push(Array(i + 1).fill(d1));
+        gapHits[sum].push([d1, d2]);
+        //gapHits[sum].push(Array(i + 1).fill(d1));
       }
     } else {
       gapHits[d1] = gapHits[d1].concat([[d1, d2]]);
@@ -14,9 +15,5 @@ for (let d1 = 1; d1 <= 6; d1++) {
     }
   }
 }
-
-//gapHits.forEach(jlog);
-
-//gapHits.forEach((a, i) => jlog([i, a.length]));
 
 export default gapHits;

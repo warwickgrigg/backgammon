@@ -1,7 +1,8 @@
 import goers from "./goers";
+import tail from "./tail";
 
-const jlog = o => console.log(JSON.stringify(o));
-const jlog2 = o => console.log(JSON.stringify(o, null, 2));
+//const jlog = o => console.log(JSON.stringify(o));
+//const jlog2 = o => console.log(JSON.stringify(o, null, 2));
 
 const moveOps = ([me, opp]) => ({
   doMove: ({ from, to, taken }) => {
@@ -22,11 +23,6 @@ const moveOps = ([me, opp]) => ({
   }
 });
 
-const tail = pucks => (from = 0) => {
-  while (!pucks[from] && from++ < 25);
-  return from;
-};
-
 const moves = fn => ({ dice: d, points, player }) => {
   const [me, opp] = player === 0 ? points : [points[1], points[0]];
   const { doMove, undoMove } = moveOps([me, opp]);
@@ -35,10 +31,11 @@ const moves = fn => ({ dice: d, points, player }) => {
     : d[0] > d[1] ? [d[1], d[0]] : d.slice();
   const g = goers([me, opp], combo);
   const myTail = tail(me);
+  const initTail = myTail(0);
   const end = combo.length - 1;
   const result = Array.from(new Array(combo.length), () => ({}));
   const off = me.length - 1;
-  jlog({ g });
+  //jlog({ g });
 
   const isDup = () => {
     if (combo.length !== 2) return false; // doubles and single die
@@ -84,11 +81,11 @@ const moves = fn => ({ dice: d, points, player }) => {
     //jlog({ exitAt: { s, from: g[r].goers[s], hasPosted } });
     return hasPosted;
   };
-  recurse(0, 0, myTail(0));
+  recurse(0, 0, initTail);
   if (combo.length === 2) {
     [g[0], g[1]] = [g[1], g[0]];
     [combo[0], combo[1]] = [combo[1], combo[0]];
-    recurse(0, 0, myTail(0));
+    recurse(0, 0, initTail);
   }
 };
 

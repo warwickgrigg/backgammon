@@ -22,7 +22,7 @@ const moveOps = ([me, opp]) => ({
     }
   }
 });
-
+/*
 const newMoves = fn => ({ dice: d, points, player }) => {
   const [me, opp] = player === 0 ? points : [points[1], points[0]];
   const { doMove, undoMove } = moveOps([me, opp]);
@@ -51,6 +51,24 @@ const newMoves = fn => ({ dice: d, points, player }) => {
   const walk = () => {
     //const recurse = (r, s, tail) => {
     let r = 0;
+
+    while (true) {
+      let m = stack[r];
+      const m.slen = me[0] >= stack.length - r ? 1 : stack[r].goers.length;;
+      if (m.s > m.slen) {
+      // Do your thing with the node.
+      node->current = 0; // Reset counter for next traversal.
+      r--;
+    }
+    else {
+        Node prev = node;
+        if (node->child[node->current]) {
+          node = node->child[node->current];
+        }
+        prev->current++;
+
+    }
+
     const slen0 = me[0] >= stack.length ? 1 : stack[0].goers.length;
     while (stack[0].s <= slen0) {
       //jlog({ entryWith: { r, s, tail } });
@@ -71,7 +89,6 @@ const newMoves = fn => ({ dice: d, points, player }) => {
           var taken = 0;
         } else taken = opp[off - m.to];
         //jlog({ combo, bar: me[0], ...m, r, result });
-        m.hasPosted = true;
         Object.assign(m, { from, to, taken });
         if (r === end) {
           if (!isDup()) post(stack);
@@ -84,12 +101,10 @@ const newMoves = fn => ({ dice: d, points, player }) => {
           stack[r].tail = myTail(m.tail);
         }
       }
-      r--;
       m = stack[r];
-      m.hasPosted = m.hasPosted || stack[r + 1].hasPosted;
-      if (!m.hasPosted) post(stack.slice(0, r));
       undoMove(m);
       if (m.newGoer) m.goers.pop();
+      r--;
       //jlog({ exitAt: { s, from: g[r].goers[s], hasPosted } });
     }
   };
@@ -100,7 +115,7 @@ const newMoves = fn => ({ dice: d, points, player }) => {
   }
 };
 
-//
+*/
 const moves = fn => ({ dice: d, points, player }) => {
   const [me, opp] = player === 0 ? points : [points[1], points[0]];
   const { doMove, undoMove } = moveOps([me, opp]);

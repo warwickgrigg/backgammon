@@ -111,3 +111,10 @@ test("dice diff, points startBearOff", () => {
     [[18, 23, 0], [24, 25, 0]]
   ]);
 });
+/*
+test("all done", () => {
+  expect(validMoves({ player: 0, points: toBoard(""), dice: [1, 5] })).toEqual(
+    [[]]
+  );
+});
+*/

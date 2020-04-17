@@ -38,7 +38,7 @@ export default function App() {
         return state;
     }
   };
-  jlog(validMoves(state));
+  //jlog(validMoves(state));
   return (
     <StateProvider initialState={state} reducer={reducer}>
       <div className="App">

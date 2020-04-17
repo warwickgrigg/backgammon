@@ -1,7 +1,10 @@
 import goers from "./goers";
 import tail from "./tail";
 
-//const jlog = o => console.log(JSON.stringify(o));
+const jlog = o => {
+  console.log(JSON.stringify(o));
+  return o;
+};
 //const jlog2 = o => console.log(JSON.stringify(o, null, 2));
 
 const moveOps = ([me, opp]) => ({
@@ -22,8 +25,8 @@ const moveOps = ([me, opp]) => ({
     }
   }
 });
-/*
-const newMoves = fn => ({ dice: d, points, player }) => {
+
+const moves = fn => ({ dice: d, points, player }) => {
   const [me, opp] = player === 0 ? points : [points[1], points[0]];
   const { doMove, undoMove } = moveOps([me, opp]);
   //prettier-ignore
@@ -35,77 +38,78 @@ const newMoves = fn => ({ dice: d, points, player }) => {
   const off = me.length - 1;
   //jlog({ g });
   const stack = combo.map((d, i) => ({ d, ...g[i], bear: off - d }));
-  stack[0] = { ...stack[0], tail: myTail(0), s: 0 };
-  const isDup = () => {
-    if (stack.length !== 2) return false; // doubles and single die
-    if (stack[0].d <= stack[1].d) return false; // not second pass
-    if (stack[0].from === stack[1].from) return true;
-    return (
-      stack[0].to === stack[1].from && // is bounce
-      stack[0].taken === stack[off - stack[0].taken - stack[1].d] // same take
-    );
-  };
 
-  const post = a => fn(a.map(({ from: f, to: t, taken: n }) => [f, t, n]));
+  const post = a =>
+    fn(a.map(({ from: f, to: t, taken: n }) => jlog([f, t, n])));
 
-  const walk = () => {
-    //const recurse = (r, s, tail) => {
-    let r = 0;
-
-    while (true) {
-      let m = stack[r];
-      const m.slen = me[0] >= stack.length - r ? 1 : stack[r].goers.length;;
-      if (m.s > m.slen) {
-      // Do your thing with the node.
-      node->current = 0; // Reset counter for next traversal.
-      r--;
-    }
-    else {
-        Node prev = node;
-        if (node->child[node->current]) {
-          node = node->child[node->current];
-        }
-        prev->current++;
-
-    }
-
-    const slen0 = me[0] >= stack.length ? 1 : stack[0].goers.length;
-    while (stack[0].s <= slen0) {
-      //jlog({ entryWith: { r, s, tail } });
-      let m = stack[r];
-      m.hasPosted = false;
-      m.slen = me[0] >= stack.length - r ? 1 : m.goers.length;
-      for (; stack[r].s < stack[r].slen; stack[r].s++) {
-        //jlog({ entryWith: { r, s, tail } });
-        m = stack[r];
+  const walk = (r = 0, iprotect = 0) => {
+    const isDup = () => {
+      if (stack.length !== 2) return false; // doubles and single die
+      if (stack[0].d <= stack[1].d) return false; // not second pass
+      if (stack[0].from === stack[1].from) return true;
+      return (
+        stack[0].to === stack[1].from &&
+        stack[0].taken === me[off - stack[0].from - stack[1].d] // is bounce // same take
+      );
+    };
+    const slen = () => {
+      if (!me[0]) return stack[r].goers.length; // none on bar
+      if (stack[r].goers.length === 0) return 0; // all blocked anyway
+      if (stack[r].goers[0] > 0) return 0; // bar puck is blocked
+      return 1;
+    };
+    const canPass = (m, goE) => {
+      if (m.hasPosted) return false;
+      for (let i = 0; i <= goE; i++) if (me[m.goers[i]]) return false;
+      return true;
+    };
+    stack[0] = { ...stack[0], s: 0, tail: myTail(0), slen: slen() };
+    while (r >= 0 && iprotect++ < 100) {
+      stack[r].hasPosted = false;
+      while (iprotect++ < 100 && stack[r].s < stack[r].slen) {
+        const m = stack[r];
+        //let s = m.s;
         const from = m.goers[m.s];
-        //jlog({ combo, bar: me[0], r, from: m.from, result });
-        if (!me[from]) continue;
         let to = from + m.d;
-        if (to >= off) {
-          if (tail < 19) continue; // not all home
-          if (to > off && from > tail) continue;
-          to = off;
-          var taken = 0;
-        } else taken = opp[off - m.to];
-        //jlog({ combo, bar: me[0], ...m, r, result });
-        Object.assign(m, { from, to, taken });
-        if (r === end) {
-          if (!isDup()) post(stack);
-        } else {
-          r++;
-          stack[r].s = m.s;
-          m.newGoer = !me[to] && stack[r].hot[to] ? to : 0;
-          if (m.newGoer) stack[r].goers.push(m.newGoer);
-          doMove(m);
-          stack[r].tail = myTail(m.tail);
-        }
+        let taken = 0;
+        if (!me[from]) {
+          to = 0;
+        } else if (to >= off) {
+          to = m.tail < 19 || (to > off && from > m.tail) ? 0 : off;
+        } else taken = opp[off - to];
+        //prettier-ignore
+        d.length === 2 && jlog({ r, l:d.length, d:m.d, s: m.s, from, to, goers: m.goers, tail: m.tail });
+        if (to) {
+          Object.assign(m, { from, to, taken });
+          //pretiier-ignore
+          jlog({ r, s: m.s, from, to, taken, end });
+          if (r === end) {
+            !isDup() && post(stack);
+            m.hasPosted = true;
+            m.s++;
+          } else {
+            r++;
+            stack[r].s = m.s;
+            m.newGoer = !me[to] && stack[r].hot[to] ? to : 0;
+            if (m.newGoer) stack[r].goers.push(m.newGoer);
+            doMove(m);
+            stack[r].slen = slen();
+            stack[r].tail = myTail(m.tail);
+          }
+        } else m.s++;
       }
-      m = stack[r];
-      undoMove(m);
+      const m = stack[r];
+      jlog({ undo: { r, s: m.s, slen: m.slen } });
       if (m.newGoer) m.goers.pop();
-      r--;
-      //jlog({ exitAt: { s, from: g[r].goers[s], hasPosted } });
+      undoMove(m);
+      if (--r >= 0) {
+        if (canPass(m, stack[r].s)) {
+          jlog({ truncated: { m, s: stack[r].s } });
+          post(stack.slice(0, r + 1));
+          stack[r].hasPosted = true;
+        }
+        stack[r].s++;
+      }
     }
   };
   walk();
@@ -115,8 +119,7 @@ const newMoves = fn => ({ dice: d, points, player }) => {
   }
 };
 
-*/
-const moves = fn => ({ dice: d, points, player }) => {
+const oldmoves = fn => ({ dice: d, points, player }) => {
   const [me, opp] = player === 0 ? points : [points[1], points[0]];
   const { doMove, undoMove } = moveOps([me, opp]);
   //prettier-ignore
@@ -133,9 +136,9 @@ const moves = fn => ({ dice: d, points, player }) => {
     if (combo.length !== 2) return false; // doubles and single die
     if (combo[0] <= combo[1]) return false; // not second pass
     if (result[0].from === result[1].from) return true;
-    return (
+    return jlog(
       result[0].to === result[1].from && // is bounce
-      result[0].taken === opp[off - result[0].taken - combo[1]] // same take
+        result[0].taken === opp[off - result[0].taken - combo[1]] // same take
     );
   };
 

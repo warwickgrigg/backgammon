@@ -36,7 +36,6 @@ const moves = fn => ({ dice: d, points, player }) => {
   const myTail = tail(me);
   const end = combo.length - 1;
   const off = me.length - 1;
-  //jlog({ g });
   const stack = combo.map((d, i) => ({ d, ...g[i], bear: off - d }));
 
   const post = a =>
@@ -55,20 +54,18 @@ const moves = fn => ({ dice: d, points, player }) => {
     const slen = () => {
       if (!me[0]) return stack[r].goers.length; // none on bar
       if (stack[r].goers.length === 0) return 0; // all blocked anyway
-      if (stack[r].goers[0] > 0) return 0; // bar puck is blocked
-      return 1;
+      return stack[r].goers[0] > 0 ? 0 : 1; // bar puck is blocked
     };
     const canPass = (m, goE) => {
       if (m.hasPosted) return false;
       for (let i = 0; i <= goE; i++) if (me[m.goers[i]]) return false;
       return true;
     };
-    stack[0] = { ...stack[0], s: 0, tail: myTail(0), slen: slen() };
-    while (r >= 0 && iprotect++ < 100) {
-      stack[r].hasPosted = false;
-      while (iprotect++ < 100 && stack[r].s < stack[r].slen) {
+    const stackDefaults = { s: 0, tail: myTail(0), slen: slen(), hasPosted: 0 };
+    stack[0] = { ...stack[0], ...stackDefaults };
+    while (r >= 0 && iprotect++ < 200) {
+      while (stack[r].s < stack[r].slen && iprotect++ < 200) {
         const m = stack[r];
-        //let s = m.s;
         const from = m.goers[m.s];
         let to = from + m.d;
         let taken = 0;
@@ -89,12 +86,14 @@ const moves = fn => ({ dice: d, points, player }) => {
             m.s++;
           } else {
             r++;
-            stack[r].s = m.s;
-            m.newGoer = !me[to] && stack[r].hot[to] ? to : 0;
-            if (m.newGoer) stack[r].goers.push(m.newGoer);
+            const n = stack[r];
+            n.s = m.s;
+            n.newGoer = !me[to] && n.hot[to] ? to : 0;
+            if (n.newGoer) n.goers.push(n.newGoer);
             doMove(m);
-            stack[r].slen = slen();
-            stack[r].tail = myTail(m.tail);
+            n.slen = slen();
+            n.tail = myTail(m.tail);
+            n.hasPosted = false;
           }
         } else m.s++;
       }

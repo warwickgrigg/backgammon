@@ -14,12 +14,4 @@ export default (meopp, eDice = [1, 2]) => {
   const uniqDice = l === 2 ? eDice : [eDice[0]];
   const result = uniqDice.map(inner(meopp));
   return l <= 2 ? result : Array(l).fill(result[0]);
-  /*
-  const { goers, hot, bear } = result[0];
-  return Array.from(new Array(l), () => ({
-    goers: goers.slice(),
-    hot,
-    bear
-  }));
-  */
 };

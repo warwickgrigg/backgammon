@@ -130,7 +130,6 @@ test("dice diff, points startBearOff: 18w,20w,23w,24w/1,5", () => {
     ]
   ]);
 });
-
 /*
 test("all done: /1,5", () => {
   expect(vMoves({board: "", dice: [1, 5] })).toEqual(
@@ -138,3 +137,6 @@ test("all done: /1,5", () => {
   );
 });
 */
+
+//jlog(validMoves({ player: 0, points: toBoard(""), dice: [1] }));
+//jlog(toBoard(""));

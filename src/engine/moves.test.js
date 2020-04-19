@@ -67,10 +67,24 @@ test("die, exact bear off, plus alternative move: 23w,24w/1", () => {
   ]);
 });
 
-test("dice diff, points 1 x 4: 1w4,6b/1,5", () => {
+test("dice diff, points 1 x 4, no takers: 1w4/1,5", () => {
+  expect(vMoves({ board: "1w4", dice: [1, 5] })).toEqual([
+    "unchanged",
+    [[[1, 2, 0], [1, 6, 0]], [[1, 2, 0], [2, 7, 0]]]
+  ]);
+});
+
+test("dice diff, points 1 x 4, one taker: 1w4,6b/1,5", () => {
   expect(vMoves({ board: "1w4,6b", dice: [1, 5] })).toEqual([
     "unchanged",
     [[[1, 2, 0], [1, 6, 1]], [[1, 2, 0], [2, 7, 0]], [[1, 6, 1], [6, 7, 0]]]
+  ]);
+});
+
+test("dice diff, points 1 x 4, two takers: 1w4,2b,6b/1,5", () => {
+  expect(vMoves({ board: "1w4,2b,6b", dice: [1, 5] })).toEqual([
+    "unchanged",
+    [[[1, 2, 1], [1, 6, 1]], [[1, 2, 1], [2, 7, 0]], [[1, 6, 1], [6, 7, 0]]]
   ]);
 });
 

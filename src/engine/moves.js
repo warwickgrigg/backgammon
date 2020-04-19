@@ -25,26 +25,27 @@ const moveOps = ([me, opp]) => ({
   }
 });
 
-const moves = fn => ({ dice: d, points, player }) => {
+const moves = fn => ({ dice, points, player }) => {
   const [me, opp] = player === 0 ? points : [points[1], points[0]];
   const { doMove, undoMove, trailer } = moveOps([me, opp]);
-  //prettier-ignore
-  const combo = d[0] === d[1] ? [d[0], d[0], d[0], d[0]] : 
-                d[0] > d[1] ? [d[1], d[0]] : d;
-  const g = goers([me, opp], combo);
-  const initTail = trailer(0);
-  const end = combo.length - 1;
+  const path = initPath(dice);
+  const end = path.length - 1;
   const off = me.length - 1;
-  const path = combo.map((d, i) => ({ d, ...g[i] /* bear: off - d */ }));
+
+  function initPath(d) {
+    //prettier-ignore
+    const combo = d[0] === d[1] ? [d[0], d[0], d[0], d[0]] : 
+                  d[0] > d[1] ? [d[1], d[0]] : d;
+    const g = goers([me, opp], combo);
+    return combo.map((die, i) => ({ die, ...g[i] }));
+  }
 
   const isDup = () => {
     if (path.length !== 2) return false; // doubles and single die
-    if (path[0].d <= path[1].d) return false; // not second pass
-    if (path[0].from === path[1].from) return true;
-    return (
-      path[0].to === path[1].from &&
-      path[0].taken === me[off - path[0].from - path[1].d] // is bounce // same take
-    );
+    if (path[0].die <= path[1].die) return false; // not second pass
+    if (path[0].from === path[1].from) return true; // same from
+    if (path[0].to !== path[1].from) return false; // not bounce
+    return !path[0].taken && !me[off - path[0].from - path[1].die]; // no take
   };
 
   const post = a => fn(a.map(({ from: f, to: t, taken: n }) => [f, t, n]));
@@ -60,29 +61,29 @@ const moves = fn => ({ dice: d, points, player }) => {
     return c.goers[0] > 0 ? 0 : 1; // bar is blocked y/n
   };
 
-  const recurse = (r, g, tail) => {
-    const c = path[r]; // current node
+  const walkTree = (depth, g, tail) => {
+    const c = path[depth]; // current node
     let canPass = true;
     for (const gLim = gLimit(c); g < gLim; g++) {
       c.from = c.goers[g];
       if (!me[c.from]) continue; // if all pucks moved away
-      c.to = c.from + c.d;
+      c.to = c.from + c.die;
       if (c.to >= off) {
         if (tail < 19) continue; // not all home
         if (c.to > off && c.from > tail) continue;
         c.to = off;
         c.taken = 0;
       } else c.taken = opp[off - c.to];
-      jlog({ r, l: d.length, c: { ...c, hot: undefined } });
-      if (r === end) {
+      jlog({ depth, l: path.length, c: { ...c, hot: undefined } });
+      if (depth === end) {
         if (!isDup()) post(path);
       } else {
-        const next = path[r + 1];
+        const next = path[depth + 1];
         const pushValue = !me[c.to] && next.hot[c.to] ? c.to : 0;
         if (pushValue) next.goers.push(pushValue);
         doMove(c);
-        canPass = recurse(r + 1, g, trailer(tail)) && canPass;
-        if (canPass && !earlierGoers(c, g)) post(path.slice(0, r + 1));
+        canPass = walkTree(depth + 1, g, trailer(tail)) && canPass;
+        if (canPass && !earlierGoers(c, g)) post(path.slice(0, depth + 1));
         undoMove(c);
         if (pushValue) next.goers.pop();
       }
@@ -90,10 +91,11 @@ const moves = fn => ({ dice: d, points, player }) => {
     }
     return canPass;
   };
-  recurse(0, 0, initTail);
-  if (combo.length === 2) {
+  const initTail = trailer(0);
+  walkTree(0, 0, initTail);
+  if (path.length === 2) {
     [path[0], path[1]] = [path[1], path[0]];
-    recurse(0, 0, initTail);
+    walkTree(0, 0, initTail);
   }
 };
 

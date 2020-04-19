@@ -5,30 +5,22 @@ import Surface from "./components/surface";
 import Dice from "./components/dice";
 import Counter from "./components/counter";
 import GlobalCounter from "./components/gcounter";
+import toBoard from "./engine/toBoard";
 import { validMoves } from "./engine/moves";
 import { StateProvider } from "./state";
 
 const jlog = o => console.log(JSON.stringify(o));
 
+const boardStart = toBoard("1w2,6b5,8b3,12w5,13b5,17w3,19w5,24b2/w/1,2");
+//jlog(toBoard("1w2,6b5,8b3,12w5,13b5,17w3,19w5,24b2/w/1,2"));
+
 export default function App() {
   const state = {
     counter: 0,
-    dice: [1, 5],
-    player: 0, // 0 for white, 1 for black
-    // prettier-ignore
-    points: [
-      [ // white
-        0, // on bar
-        2, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 3,
-        0, 1, 1, 0, 3, 0,    5, 0, 0, 0, 0, 0,
-        0,  // off
-      ], [ // black
-        0, // on bar
-        2, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 5,
-        0, 0, 0, 0, 3, 0,    3, 0, 0, 1, 1, 0,
-        0,  // off
-      ],
-    ]
+    // dice: [1, 5],
+    // player: 0, // 0 for white, 1 for black
+    // points: [[],[]],
+    ...boardStart
   };
   const reducer = (state, action) => {
     switch (action.type) {

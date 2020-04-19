@@ -1,8 +1,9 @@
 export default a => {
-  const board = [Array(25).fill(0), Array(25).fill(0)];
+  const points = [Array(25).fill(0), Array(25).fill(0)];
   const onboardCount = [0, 0];
   if (typeof a === "string") {
-    a = a
+    a = a.split("/");
+    a[0] = a[0]
       .split(",")
       .map(v => v.match(/(\d+|[^\d]+)/g))
       .map(([p, c, n = "1"]) => [
@@ -10,12 +11,14 @@ export default a => {
         c.toLowerCase() === "w" ? 0 : 1,
         parseInt(n, 10)
       ]);
+    a[1] = a[1] ? a[1].toLowerCase() === "w" : 0;
+    a[2] = a[2] ? a[2].split(",").map(i => parseInt(i, 10)) : [];
   }
-  a.forEach(([position, color, count]) => {
+  a[0].forEach(([position, color, count]) => {
     const p = color ? 25 - position : position;
-    onboardCount[color] += count - board[color][p];
-    board[color][p] = count;
+    onboardCount[color] += count - points[color][p];
+    points[color][p] = count;
   });
-  onboardCount.forEach((v, color) => (board[color][25] = 15 - v));
-  return board;
+  onboardCount.forEach((v, color) => (points[color][25] = 15 - v));
+  return { points, player: a[1], dice: a[2] };
 };

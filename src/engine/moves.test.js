@@ -4,7 +4,7 @@ import toBoard from "./toBoard";
 const jlog = o => console.log(JSON.stringify(o));
 const jlog2 = o => console.log(JSON.stringify(o, null, 2));
 
-//console.log({ toBoard: toBoard("1w") });
+console.log({ toBoard: toBoard("1w") });
 
 const arrayDiff = (a, b, path = []) => {
   if (!Array.isArray(a) || !Array.isArray(b)) return a !== b ? path : false;
@@ -16,7 +16,7 @@ const arrayDiff = (a, b, path = []) => {
 };
 
 const vMoves = ({ player = 0, board = "1w", dice = [1] }) => {
-  const [before, points] = [toBoard(board), toBoard(board)];
+  const [before, points] = [toBoard(board).points, toBoard(board).points];
   const r = validMoves({ player, points, dice });
   return [arrayDiff(before, points) || "unchanged", r];
 };

@@ -6,7 +6,7 @@ const jlog2 = o => console.log(JSON.stringify(o, null, 2));
 
 // prettier-ignore
 const points = {
-  case1: toBoard("0w,2b,19w,20w,21w,22w,22b2,23w,24w,25b2")
+  case1: toBoard("0w,2b,19w,20w,21w,22w,22b2,23w,24w,25b2").points
 };
 
 test("mover options, blocker on 22, two dice", () => {

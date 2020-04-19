@@ -15,10 +15,7 @@ export default ({ points }) => {
       return (
         count !== 0 && (
           <div
-            onClick={() => {
-              console.log({ point });
-              selectPoint(point === selectedPoint ? -1 : point);
-            }}
+            onClick={() => selectPoint(point === selectedPoint ? -1 : point)}
             className={stackClass}
             key={gridArea}
             style={{ gridArea }}

@@ -22,14 +22,17 @@ export default function App() {
     // points: [[],[]],
     ...boardStart
   };
-  const reducer = (state, action) => {
-    switch (action.type) {
+
+  const reducer = (state, update) => {
+    if (typeof update === "function") return { ...state, ...update(state) };
+    switch (update.type) {
       case "inc":
-        return { ...state, counter: state.counter + action.value };
+        return { ...state, counter: state.counter + update.value };
       default:
         return state;
     }
   };
+
   //jlog(validMoves(state));
   return (
     <StateProvider initialState={state} reducer={reducer}>

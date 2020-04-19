@@ -41,10 +41,10 @@ const moves = fn => ({ dice, points, player }) => {
   }
 
   const isDup = () => {
-    if (path.length !== 2) return false; // doubles and single die
+    if (path.length !== 2) return false; // not doubles and single die
     if (path[0].die <= path[1].die) return false; // not second pass
     if (path[0].from === path[1].from) return true; // same from
-    if (path[0].to !== path[1].from) return false; // not bounce
+    if (path[0].to !== path[1].from) return false; // not if no bounce
     return !path[0].taken && !me[off - path[0].from - path[1].die]; // no take
   };
 
@@ -55,16 +55,16 @@ const moves = fn => ({ dice, points, player }) => {
     return false;
   };
 
-  const gLimit = c => {
-    if (!me[0]) return c.goers.length; // none on bar
-    if (c.goers.length === 0) return 0; // all blocked anyway
-    return c.goers[0] > 0 ? 0 : 1; // bar is blocked y/n
+  const goerLimit = goers => {
+    if (!me[0]) return goers.length; // none on bar
+    if (goers.length === 0) return 0; // all blocked anyway
+    return goers[0] > 0 ? 0 : 1; // bar is blocked y/n
   };
 
   const walkTree = (depth, g, tail) => {
     const c = path[depth]; // current node
     let canPass = true;
-    for (const gLim = gLimit(c); g < gLim; g++) {
+    for (const goerLim = goerLimit(c.goers); g < goerLim; g++) {
       c.from = c.goers[g];
       if (!me[c.from]) continue; // if all pucks moved away
       c.to = c.from + c.die;

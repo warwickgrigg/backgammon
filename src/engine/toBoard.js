@@ -1,4 +1,13 @@
-export default a => {
+const board2txt = ({ points: [me, opp], player, dice }) => {
+  let board = [];
+  for (let i = 0; i < 26; i++) {
+    if (me[i]) board.push(`${i}w${me[i] > 1 ? me[i] : ""}`);
+    else if (opp[25 - i]) board.push(`${i}b${opp[25 - i] > 1 ? opp[i] : ""}`);
+  }
+  return `${board.join(",")}/${player ? "b" : "w"}/${dice.join(",")}`;
+};
+
+const toBoard = a => {
   const points = [Array(25).fill(0), Array(25).fill(0)];
   const onboardCount = [0, 0];
   if (typeof a === "string") {
@@ -22,3 +31,5 @@ export default a => {
   onboardCount.forEach((v, color) => (points[color][25] = 15 - v));
   return { points, player: a[1], dice: a[2] };
 };
+
+export default toBoard;

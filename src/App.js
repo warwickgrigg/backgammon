@@ -1,5 +1,6 @@
 import React from "react";
 import "./styles.css";
+import Board from "./components/board";
 import Pucks from "./components/pucks";
 import Surface from "./components/surface";
 import Dice from "./components/dice";
@@ -33,30 +34,13 @@ export default function App() {
         return state;
     }
   };
-
-  const boardClick = e => {
-    //e.stopPropagation();
-    //e.preventDefault();
-    let { left, top, bottom, right } = e.target.getBoundingClientRect();
-    const { clientX, clientY } = e;
-    [left, top, bottom, right] = [left, top, bottom, right].map(v =>
-      Math.floor(v)
-    );
-    jlog({ left, top, bottom, right, clientX, clientY });
-    jlog([clientX - left, clientY - top]);
-  };
-  //jlog(validMoves(state));
   return (
     <StateProvider initialState={state} reducer={reducer}>
       <div className="App">
         <div key="head">
           <h1>Backgammon - a work in progress</h1>
         </div>
-        <div className="board" key="board" onClick={e => boardClick(e)}>
-          <Surface />
-          <Pucks points={state.points} player={state.player} />
-          <Dice values={state.dice} />
-        </div>
+        <Board />
         <Counter />
         <GlobalCounter />
         <GlobalCounter />

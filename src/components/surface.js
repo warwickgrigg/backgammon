@@ -8,10 +8,10 @@ const surface = () => (
   <div className="columns">
     {insert(
       Array.from(new Array(12), (_, c) => (
-        <div className={columnClass[c % 2]} key={`c${c}`} />
+        <div className={columnClass[c % 2]} key={`c${c}`} id={`c${c}`} />
       )),
       6,
-      <div className="bar" key="bar" />
+      <div className="bar" key="bar" id="bar" />
     )}
   </div>
 );

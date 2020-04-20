@@ -21,6 +21,7 @@ export default function App() {
     // player: 0, // 0 for white, 1 for black
     // points: [[],[]],
     ...boardStart
+    //player: 0
   };
 
   const reducer = (state, update) => {
@@ -42,7 +43,7 @@ export default function App() {
         </div>
         <div className="board" key="board">
           <Surface />
-          <Pucks points={state.points} />
+          <Pucks points={state.points} player={state.player} />
           <Dice values={state.dice} />
         </div>
         <Counter />

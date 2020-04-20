@@ -11,7 +11,7 @@ export default a => {
         c.toLowerCase() === "w" ? 0 : 1,
         parseInt(n, 10)
       ]);
-    a[1] = a[1] ? a[1].toLowerCase() === "w" : 0;
+    a[1] = a[1] && a[1].toLowerCase() === "b" ? 1 : 0;
     a[2] = a[2] ? a[2].split(",").map(i => parseInt(i, 10)) : [];
   }
   a[0].forEach(([position, color, count]) => {

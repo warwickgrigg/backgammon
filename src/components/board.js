@@ -3,7 +3,7 @@ import { useStateValue } from "../state";
 import Pucks from "./pucks";
 import Surface from "./surface";
 import Dice from "./dice";
-import { validMoves } from "../engine/moves";
+import { validMoves, validFirstMoves } from "../engine/moves";
 
 const jlog = o => console.log(JSON.stringify(o));
 //
@@ -32,6 +32,11 @@ export default () => {
     jlog({ selectedPoint, point });
     if (selectedPoint === -1 && points[player][point]) {
       jlog(validMoves({ points, dice, player, from: point }));
+      jlog(
+        validFirstMoves({ points, dice, player }).filter(
+          i => i[0][0] === selectedPoint
+        )
+      );
       selectPoint(point);
     } else if (point === selectedPoint) {
       selectPoint(-1);

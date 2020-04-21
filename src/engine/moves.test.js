@@ -159,10 +159,13 @@ test("justOne: 18w,20w,23w,24w/1,5", () => {
   ]);
 });
 
-test("firstMoves: 18w,20w,23w,24w/1,5", () => {
-  expect(
-    validFirstMoves({ ...toBoard("18w,20w,23w,24w/w/1,5"), dice: [1, 5] })
-  ).toEqual([[[18, 19, 0]], [[20, 21, 0]], [[23, 24, 0]], [[18, 23, 0]]]);
+test("firstMoves: 18w,20w,23w,24w/w/1,5", () => {
+  expect(validFirstMoves({ ...toBoard("18w,20w,23w,24w/w/1,5") })).toEqual([
+    [[18, 19, 0]],
+    [[20, 21, 0]],
+    [[23, 24, 0]],
+    [[18, 23, 0]]
+  ]);
 });
 /*
 test("all done: /1,5", () => {

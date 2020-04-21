@@ -1,14 +1,11 @@
 import React from "react";
 import "./styles.css";
-import Board from "./components/board";
-import Pucks from "./components/pucks";
-import Surface from "./components/surface";
-import Dice from "./components/dice";
+import { StateProvider } from "./state";
 import Counter from "./components/counter";
 import GlobalCounter from "./components/gcounter";
+import Board from "./components/board";
 import toBoard from "./engine/toBoard";
 import { validMoves } from "./engine/moves";
-import { StateProvider } from "./state";
 
 const jlog = o => console.log(JSON.stringify(o));
 

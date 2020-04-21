@@ -1,55 +1,6 @@
 import React, { useState } from "react";
-import { useStateValue } from "../state";
 
-/*
-export default () => {
-  const [{ counter }, dispatch] = useStateValue(); //[{ counter: 1 }, () => 0]; //
-  return (
-    <button
-      onClick={() =>
-        dispatch({
-          type: "inc",
-          value: 1
-        })
-      }
-    >
-      {counter}
-    </button>
-  );
-};
-*/
-
-const insert = (a, i, v) => [...a.slice(0, i), v, ...a.slice(i)];
-
-const columnClass = ["column even", "column odd"];
-
-const surface = () => (
-  <div className="columns">
-    {insert(
-      Array.from(new Array(12), (_, c) => (
-        <div className={columnClass[c % 2]} key={`c${c}`} />
-      )),
-      6,
-      <div className="bar" key="bar" />
-    )}
-  </div>
-);
-
-export default ({ points, player }) => {
-  const [{ dice }, dispatch] = useStateValue(); //[{ counter: 1 }, () => 0]; //
-  const [selectedPoint, selectPoint] = useState(-1);
-  const pointClick = point => {
-    if (selectedPoint === -1) {
-      selectPoint(point);
-    } else if (point === selectedPoint) {
-      selectPoint(-1);
-    } else if (opp[25 - point] < 1) {
-      dispatch({
-        type: "inc",
-        value: 1
-      });
-    }
-  };
+export default ({ points, player, selectedPoint }) => {
   return points.map((stacks, c) =>
     stacks.map((count, point) => {
       if (!count) return undefined;
@@ -64,7 +15,7 @@ export default ({ points, player }) => {
       const topClassSuffix = point === selectedPoint ? " selected" : "";
       return (
         <div
-          onClick={() => pointClick(point)}
+          onClick={() => 0 /*pointClick(point)*/}
           className={stackClass}
           key={gridArea}
           style={{ gridArea }}
@@ -72,6 +23,7 @@ export default ({ points, player }) => {
           {Array.from(new Array(count), (_, k) => (
             <div
               key={k}
+              id={`p/${point}/${k}`}
               className={puckClass + (k === count - 1 ? topClassSuffix : "")}
             >
               {!k && excess}

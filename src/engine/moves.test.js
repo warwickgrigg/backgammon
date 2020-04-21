@@ -1,4 +1,4 @@
-import { validMoves } from "./moves";
+import { validMoves, validFirstMoves } from "./moves";
 import toBoard from "./toBoard";
 
 const jlog = o => console.log(JSON.stringify(o));
@@ -15,9 +15,9 @@ const arrayDiff = (a, b, path = []) => {
   return false;
 };
 
-const vMoves = ({ player = 0, board = "1w", dice = [1] }) => {
+const vMoves = ({ player = 0, board = "1w", dice = [1], ...props }) => {
   const [before, points] = [toBoard(board).points, toBoard(board).points];
-  const r = validMoves({ player, points, dice });
+  const r = validMoves({ player, points, dice, ...props });
   return [arrayDiff(before, points) || "unchanged", r];
 };
 
@@ -143,6 +143,26 @@ test("dice diff, points startBearOff: 18w,20w,23w,24w/1,5", () => {
       [[18, 23, 0], [24, 25, 0]]
     ]
   ]);
+});
+
+test("justOne: 18w,20w,23w,24w/1,5", () => {
+  expect(vMoves({ board: "18w,20w,23w,24w", dice: [1, 5], from: 20 })).toEqual([
+    "unchanged",
+    [[[20, 21, 0]]]
+  ]);
+});
+
+test("justOne: 18w,20w,23w,24w/1,5", () => {
+  expect(vMoves({ board: "18w,20w,23w,24w", dice: [1, 5], from: 20 })).toEqual([
+    "unchanged",
+    [[[20, 21, 0]]]
+  ]);
+});
+
+test("firstMoves: 18w,20w,23w,24w/1,5", () => {
+  expect(
+    validFirstMoves({ ...toBoard("18w,20w,23w,24w/w/1,5"), dice: [1, 5] })
+  ).toEqual([[[18, 19, 0]], [[20, 21, 0]], [[23, 24, 0]], [[18, 23, 0]]]);
 });
 /*
 test("all done: /1,5", () => {

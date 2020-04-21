@@ -80,7 +80,7 @@
 }
 
 .puck.selected {
-  background: green;
+  background: blue;
 }
 
 .puck.movable::after {

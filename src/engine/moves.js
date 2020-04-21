@@ -25,7 +25,7 @@ const moveOps = ([me, opp]) => ({
   }
 });
 
-const moves = fn => ({ dice, points, player }) => {
+const moves = fn => ({ dice, points, player, from = -1 }) => {
   const [me, opp] = player === 0 ? points : [points[1], points[0]];
   const { doMove, undoMove, trailer } = moveOps([me, opp]);
   const path = initPath(dice);
@@ -34,9 +34,11 @@ const moves = fn => ({ dice, points, player }) => {
 
   function initPath(d) {
     //prettier-ignore
-    const combo = d[0] === d[1] ? [d[0], d[0], d[0], d[0]] : 
-                  d[0] > d[1] ? [d[1], d[0]] : d;
+    let combo = from >= 0 ? [d[0]] : 
+                d[0] === d[1] ? [d[0], d[0], d[0], d[0]] : 
+                d[0] > d[1] ? [d[1], d[0]] : d;
     const g = goers([me, opp], combo);
+    if (from >= 0) g[0].goers = g[0].goers.filter(p => p === from);
     return combo.map((die, i) => ({ die, ...g[i] }));
   }
 
@@ -99,10 +101,17 @@ const moves = fn => ({ dice, points, player }) => {
   }
 };
 
-const validMoves = state => {
+const validMoves = props => {
   const result = [];
-  moves(v => result.push(v))(state);
+  moves(v => result.push(v))(props);
   return result;
 };
 
-export { moves, moveOps, validMoves };
+const validFirstMoves = ({ dice: d, ...props }) => {
+  const result = [];
+  d = d[0] === d[1] ? [d[0]] : d;
+  d.forEach(d => moves(v => result.push(v))({ dice: [d], ...props }));
+  return result;
+};
+
+export { moves, moveOps, validMoves, validFirstMoves };

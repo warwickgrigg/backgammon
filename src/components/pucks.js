@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-
-export default ({ points, player, selectedPoint }) => {
+const jlog = o => console.log(JSON.stringify(o));
+export default ({ points, selectedPoint }) => {
+  jlog({ selectedPoint });
   return points.map((stacks, c) =>
     stacks.map((count, point) => {
       if (!count) return undefined;
@@ -13,6 +14,7 @@ export default ({ points, player, selectedPoint }) => {
       const stackClass = point > 12 ? "puck-stack near" : "puck-stack";
       const puckClass = ["puck", "puck dark"][c];
       const topClassSuffix = point === selectedPoint ? " selected" : "";
+      //jlog({ point, selectedPoint, topClassSuffix });
       return (
         <div
           onClick={() => 0 /*pointClick(point)*/}

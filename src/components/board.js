@@ -1,14 +1,14 @@
-import React, { useState } from "react";
-import { useStateValue } from "../state";
+import React from "react";
+//import React, { useState } from "react";
+//import { useStateValue } from "../state";
 import Pucks from "./pucks";
 import Surface from "./surface";
 import Dice from "./dice";
 
 const jlog = o => console.log(JSON.stringify(o));
 
-export default () => {
-  const [{ points, dice, player, possibleFrom }, dispatch] = useStateValue();
-  const [selectedPoint, selectPoint] = useState(-1);
+export default ({ points, dice, player, dispatch }) => {
+  //const [selectedPoint, selectPoint] = useState(-1);
   const boardClick = e => {
     //e.stopPropagation();
     //e.preventDefault();
@@ -24,7 +24,7 @@ export default () => {
     jlog([id, t, i, j, [cx - bx1, cy - by1], [[bx1, by1], [bx2, by2]]]);
     //if (t === "p" || t === "c") pointClick(parseInt(i, 10));
   };
-  let pucksProps = { points, player, dice, selectedPoint, possibleFrom };
+  let pucksProps = { points, dice, player, dispatch };
 
   return (
     <div className="board" key="board" onClick={e => 1 /*boardClick(e)*/}>

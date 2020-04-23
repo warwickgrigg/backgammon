@@ -76,7 +76,7 @@ const moves = fn => ({ dice, points, player, from = -1 }) => {
         c.to = off;
         c.taken = 0;
       } else c.taken = opp[off - c.to];
-      jlog({ depth, l: path.length, c: { ...c, hot: undefined } });
+      //jlog({ depth, l: path.length, c: { ...c, hot: undefined } });
       if (depth === end) {
         if (!isDup()) post(path);
       } else {
@@ -107,11 +107,15 @@ const validMoves = props => {
   return result;
 };
 
-const validFirstMoves = ({ dice: d, ...props }) => {
+const validFirstMoves = ({ dice: d, points, ...props }) => {
   const result = [];
-  jlog({ d });
+  const p = [[...points[0]], [...points[1]]];
+  jlog({ v: "firstMoves", d });
   d = d[0] === d[1] ? [d[0]] : d;
-  d.forEach(d => moves(v => result.push(v))({ dice: [d], ...props }));
+  d.forEach(d =>
+    moves(v => result.push(v))({ dice: [d], points: p, ...props })
+  );
+  jlog({ result });
   return result;
 };
 

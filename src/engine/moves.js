@@ -109,6 +109,7 @@ const validMoves = props => {
 
 const validFirstMoves = ({ dice: d, ...props }) => {
   const result = [];
+  jlog({ d });
   d = d[0] === d[1] ? [d[0]] : d;
   d.forEach(d => moves(v => result.push(v))({ dice: [d], ...props }));
   return result;

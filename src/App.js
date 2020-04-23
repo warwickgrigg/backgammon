@@ -9,7 +9,7 @@ import { validMoves } from "./engine/moves";
 
 const jlog = o => console.log(JSON.stringify(o));
 
-const boardStart = toBoard("1w2,6b5,8b3,12w5,13b5,17w3,19w5,24b2/w/1,2");
+const boardStart = toBoard("1w2,6b5,8b3,12w5,13b5,17w3,19w5,24b2/w/1,5");
 //jlog(toBoard("1w2,6b5,8b3,12w5,13b5,17w3,19w5,24b2/w/1,2"));
 
 export default function App() {
@@ -18,7 +18,8 @@ export default function App() {
     // dice: [1, 5],
     // player: 0, // 0 for white, 1 for black
     // points: [[],[]],
-    ...boardStart
+    ...boardStart,
+    possibleTo: [20]
     //player: 0
   };
 

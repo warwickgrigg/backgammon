@@ -79,12 +79,16 @@
   background: rgb(7, 7, 48);
 }
 
-.puck.selected {
-  background: blue;
+.puck.possible-fron {
+  background: pink;
 }
 
-.puck.movable::after {
-  content: "·";
+.puck.possible-to {
+  background: green;
+}
+
+.puck.selected {
+  background: blue;
 }
 
 .dice {

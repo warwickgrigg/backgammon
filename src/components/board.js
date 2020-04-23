@@ -33,9 +33,7 @@ export default () => {
     if (selectedPoint === -1 && points[player][point]) {
       jlog(validMoves({ points, dice, player, from: point }));
       jlog(
-        validFirstMoves({ points, dice, player }).filter(
-          i => i[0][0] === selectedPoint
-        )
+        validFirstMoves({ points, dice, player }).filter(i => i[0][0] === point)
       );
       selectPoint(point);
     } else if (point === selectedPoint) {
@@ -50,22 +48,17 @@ export default () => {
   const boardClick = e => {
     //e.stopPropagation();
     //e.preventDefault();
-    let { left, top, bottom, right } = e.target.getBoundingClientRect();
-    const { id } = e.target;
-    const [el, i, j] = id.split("/");
-    const { clientX, clientY } = e;
-    [left, top, bottom, right] = [left, top, bottom, right].map(v =>
+    const el = e.target;
+    let { left, top, bottom, right } = el.getBoundingClientRect();
+    const { id } = el;
+    const [t, i, j] = id.split("/");
+    const { clientX: cx, clientY: cy } = e;
+    let [bx1, by1, bx2, by2] = [left, top, bottom, right].map(v =>
       Math.floor(v)
     );
-    jlog({ left, top, bottom, right, clientX, clientY });
-    jlog([
-      id,
-      el,
-      i,
-      [clientX - left, clientY - top],
-      [right - left, bottom - top]
-    ]);
-    if (el === "p" || el === "c") pointClick(parseInt(i, 10));
+    jlog({ left, top, bottom, right, cx, cy });
+    jlog([id, t, i, j, [cx - left, cy - top], [right - left, bottom - top]]);
+    if (t === "p" || t === "c") pointClick(parseInt(i, 10));
   };
   let pucksProps = { points, player, selectedPoint };
 

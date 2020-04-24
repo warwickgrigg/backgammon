@@ -28,13 +28,13 @@ export default ({ points, player, dice, dispatch }) => {
       selectPoint(point);
     }
   };
-  jlog({ info: "rendering" });
+  jlog({ info: "rendering", points, player, dice });
 
   return points.map((stacks, c) =>
     stacks.map((count, point) => {
       let topClassSuffix;
       if (c) point = 25 - point;
-      if (isPossibleTo(point) && player === c) {
+      if (isPossibleTo(point) && !points[1 - c][25 - point]) {
         count += 1;
         topClassSuffix = " possible-to";
       } else

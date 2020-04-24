@@ -4,26 +4,29 @@
 }
 
 .board {
-  --board-width: 360px;
-  --board-height: calc(var(--board-width) * 5 / 8);
-  --bar-width: calc(var(--board-width) / 20);
-  --point-height: calc((var(--board-height) - var(--point-gap)) / 2);
-  --point-width: calc((var(--board-width) - var(--bar-width)) / 12);
-  --point-gap: calc(var(--board-height) / 6);
-  --board-border: calc(var(--board-height) / 32);
-  --puck-diameter: calc(var(--point-height) / 4.75);
+  --puck-diameter: 24px;
+  --point-width: calc(var(--puck-diameter) * 1.125);
+  --point-height: calc(var(--puck-diameter) * 4.75);
+  --point-gap: calc(var(--puck-diameter) * 1.5);
   --puck-margin: calc((var(--point-width) - var(--puck-diameter)) / 2);
-  --dice-size: calc(var(--board-width) / 18);
+  --dice-size: calc(var(--puck-diameter) * 0.75);
+  --board-width: calc(
+    var(--point-width) * 13 + var(--bar-width) + var(--border-width)
+  );
+  --board-height: calc(var(--point-height) * 2 + var(--point-gap));
+  --board-border: calc(var(--puck-diameter) / 2);
+  --bar-width: calc(var(--puck-diameter) * 0.75);
+
   display: grid;
-  grid-template-columns: repeat(6, var(--point-width)) var(--bar-width) repeat(
-      6,
-      var(--point-width)
-    );
+  grid-template-columns:
+    repeat(6, var(--point-width)) var(--bar-width)
+    repeat(6, var(--point-width)) var(--border-width) var(--point-width);
   grid-template-rows: var(--point-height) var(--point-gap) var(--point-height);
   grid-template-areas:
-    "p12 p11 p10 p9 p8 p7 p0 p6 p5 p4 p3 p2 p1"
-    "l l ld ld ld lx bar r r r r r r"
-    "p13 p14 p15 p16 p17 p18 p25 p19 p20 p21 p22 p23 p24";
+    "p12 p11 p10 p9 p8 p7 p0 p6 p5 p4 p3 p2 p1 bsep boff"
+    "l l ld ld ld ld bar r r r r r r msep moff"
+    "p13 p14 p15 p16 p17 p18 p25 p19 p20 p21 p22 p23 p24 wsep woff";
+
   background: tan;
   border: var(--board-border) solid gray;
   width: var(--board-width);
@@ -31,6 +34,7 @@
 
 .board .columns {
   grid-area: 1 / 1 / 1 / 14;
+  xgrid-area: 1 / 1 / 1 / 14;
 }
 
 .column {
@@ -41,6 +45,13 @@
   border-right: calc(var(--point-width) / 2) solid transparent;
   border-bottom: var(--point-height) solid var(--color);
   border-top: var(--point-height) solid seagreen;
+}
+
+.off {
+  display: inline-block;
+  height: var(--board-height);
+  width: calc(var(--point-width) + var(--border-width));
+  border-left: var(--border-width) solid gray;
 }
 
 .even {

@@ -23,15 +23,12 @@ export default ({ points, dice, player, dispatch }) => {
     //if (t === "p" || t === "c") pointClick(parseInt(i, 10));
   };
   let pucksProps = { points, dice, player, dispatch };
-
+  //
   return (
     <div className="board" key="board">
-      {/*
       <Surface />
-      
       <Pucks {...pucksProps} />
-      <Dice values={dice} />
-      */}
+      <Dice values={dice} />x
     </div>
   );
 };

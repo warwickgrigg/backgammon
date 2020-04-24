@@ -9,23 +9,23 @@ export default ({ points, player, dice, dispatch }) => {
   const fm = validFirstMoves({ points, dice, player });
   jlog({ selectedPoint });
 
-  const isPossibleFrom = point => {
-    for (let i = 0; i < fm.length; i++) if (point === fm[i][0][0]) return true;
+  const isPossibleFrom = p => {
+    for (let i = 0; i < fm.length; i++) if (p === fm[i][0][0]) return true;
     return false;
   };
 
-  const isPossibleTo = point => {
+  const isPossibleTo = p => {
     for (let i = 0; i < fm.length; i++)
-      if (point === fm[i][0][1] && selectedPoint === fm[i][0][0]) return true;
+      if (p === fm[i][0][1] && selectedPoint === fm[i][0][0]) return true;
     return false;
   };
 
-  const puckClick = point => {
-    jlog({ selectedPoint, point });
-    if (point === selectedPoint) {
+  const puckClick = p => {
+    jlog({ selectedPoint, p });
+    if (p === selectedPoint) {
       selectPoint(-1);
-    } else if (selectedPoint === -1 && isPossibleFrom(point)) {
-      selectPoint(point);
+    } else if (selectedPoint === -1 && isPossibleFrom(p)) {
+      selectPoint(p);
     }
   };
   jlog({ info: "rendering", points, player, dice });
@@ -33,15 +33,15 @@ export default ({ points, player, dice, dispatch }) => {
   return points.map((stacks, c) =>
     stacks.map((count, point) => {
       let topClassSuffix;
-      if (c) point = 25 - point;
-      if (isPossibleTo(point) && !points[1 - c][25 - point]) {
+      const p = c ? 25 - point : point;
+      if (isPossibleTo(p) && !points[1 - c][25 - point]) {
         count += 1;
         topClassSuffix = " possible-to";
       } else
         topClassSuffix =
-          point === selectedPoint
+          p === selectedPoint
             ? " selected"
-            : selectedPoint === -1 && isPossibleFrom(point)
+            : selectedPoint === -1 && isPossibleFrom(p)
             ? " possible-from"
             : "";
       if (count > 5) {
@@ -49,17 +49,17 @@ export default ({ points, player, dice, dispatch }) => {
         count = 5;
       }
 
-      const gridArea = `p${point}`;
-      const stackClass = point > 12 ? "puck-stack near" : "puck-stack";
+      const gridArea = `p${p}`;
+      const stackClass = p > 12 ? "puck-stack near" : "puck-stack";
       const puckClass = ["puck", "puck dark"][c];
-      //jlog({ point, selectedPoint, topClassSuffix });
+      //jlog({ p, selectedPoint, topClassSuffix });
       return (
         <div className={stackClass} key={gridArea} style={{ gridArea }}>
           {Array.from(new Array(count), (_, k) => (
             <div
-              onClick={() => puckClick(point)}
+              onClick={() => puckClick(p)}
               key={k}
-              id={`p/${point}/${k}`}
+              id={`p/${p}/${k}`}
               className={puckClass + (k === count - 1 ? topClassSuffix : "")}
             >
               {!k && excess}

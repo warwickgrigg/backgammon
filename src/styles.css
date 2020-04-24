@@ -9,21 +9,23 @@
 }
 .board {
   --puck-diameter: 24px;
-  --dice-size: calc(var(--puck-diameter) * 0.75);
-  --point-width: calc(var(--puck-diameter) * 1.25);
-  --point-height: calc(var(--puck-diameter) * 4.75);
-  --point-gap: calc(var(--puck-diameter) * 1);
+  --dice-size: calc(var(--puck-diameter) * 12 / 12);
+  --point-width: calc(var(--puck-diameter) * 15 / 12);
+  --point-height: calc(var(--puck-diameter) * 57 / 12);
+  --point-gap: calc(var(--puck-diameter) * 12 / 12);
   --puck-margin: calc((var(--point-width) - var(--puck-diameter)) / 2);
-  --bar-width: calc(var(--puck-diameter) * 1);
-  --board-border: calc(var(--puck-diameter) / 4);
+  --bar-width: calc(var(--puck-diameter) * 10 / 12);
+  --off-width: calc(var(--board-border-width) + var(--point-width));
+  --board-border: calc(var(--puck-diameter) * 4 / 12);
   --board-width: calc(
     (var(--point-width) * 13) + var(--bar-width) + (3 * var(--board-border))
   );
   --board-height: calc(var(--point-height) * 2 + var(--point-gap));
+  --off-width: calc(var(--board-border) + var(--point-width));
   --rim-color: #8d6e63;
   display: grid;
   /* prettier-ignore */
-  grid-template-columns: repeat(6, var(--point-width)) 10px repeat(6, var(--point-width)) calc(var(--border-width) + var(--point-width));
+  grid-template-columns: repeat(6, var(--point-width)) var(--bar-width) repeat(6, var(--point-width)) var(--off-width);
   grid-template-rows: var(--point-height) var(--point-gap) var(--point-height);
   grid-template-areas:
     "p12 p11 p10 p9 p8 p7 p0 p6 p5 p4 p3 p2 p1 boff"
@@ -32,6 +34,13 @@
 
   background: tan;
   border: var(--board-border) solid var(--rim-color);
+  border-image: repeating-linear-gradient(
+      40deg,
+      hsl(30, 50%, 15%),
+      hsl(20, 50%, 30%),
+      hsl(25, 40%, 20%) 8px
+    )
+    60;
   width: var(--board-width);
 }
 
@@ -58,14 +67,27 @@
   width: var(--bar-width);
   height: var(--board-height);
   background-color: var(--rim-color);
+  background: repeating-linear-gradient(
+    75deg,
+    hsl(30, 50%, 15%),
+    hsl(20, 50%, 30%),
+    hsl(25, 40%, 20%) 3px
+  );
 }
 
 .off {
   display: inline-block;
   width: calc(var(--point-width) + var(--board-border));
   height: var(--board-height);
-  border-left: calc(var(--board-border)) solid var(--rim-color);
   background-color: transparent;
+  border-left: calc(var(--board-border)) solid var(--rim-color);
+  border-image: repeating-linear-gradient(
+      40deg,
+      hsl(30, 50%, 15%),
+      hsl(20, 50%, 30%),
+      hsl(25, 40%, 20%) 8px
+    )
+    60;
 }
 
 .puck-stack {

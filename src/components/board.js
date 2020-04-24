@@ -26,8 +26,9 @@ export default ({ points, dice, player, dispatch }) => {
 
   return (
     <div className="board" key="board">
-      <Surface />
       {/*
+      <Surface />
+      
       <Pucks {...pucksProps} />
       <Dice values={dice} />
       */}

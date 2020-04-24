@@ -3,58 +3,52 @@
   text-align: center;
 }
 
+.board,
+.board * {
+  box-sizing: border-box;
+}
 .board {
   --puck-diameter: 24px;
-  --point-width: calc(var(--puck-diameter) * 1.125);
-  --point-height: calc(var(--puck-diameter) * 4.75);
-  --point-gap: calc(var(--puck-diameter) * 1.5);
-  --puck-margin: calc((var(--point-width) - var(--puck-diameter)) / 2);
   --dice-size: calc(var(--puck-diameter) * 0.75);
+  --point-width: calc(var(--puck-diameter) * 1.25);
+  --point-height: calc(var(--puck-diameter) * 4.75);
+  --point-gap: calc(var(--puck-diameter) * 1);
+  --puck-margin: calc((var(--point-width) - var(--puck-diameter)) / 2);
+  --bar-width: calc(var(--puck-diameter) * 1);
+  --board-border: calc(var(--puck-diameter) / 4);
   --board-width: calc(
-    var(--point-width) * 13 + var(--bar-width) + var(--border-width)
+    (var(--point-width) * 13) + var(--bar-width) + (3 * var(--board-border))
   );
   --board-height: calc(var(--point-height) * 2 + var(--point-gap));
-  --board-border: calc(var(--puck-diameter) / 2);
-  --bar-width: calc(var(--puck-diameter) * 0.75);
-
+  --rim-color: #8d6e63;
   display: grid;
-  grid-template-columns:
-    repeat(6, var(--point-width)) var(--bar-width)
-    repeat(6, var(--point-width)) var(--border-width) var(--point-width);
+  /* prettier-ignore */
+  grid-template-columns: repeat(6, var(--point-width)) 10px repeat(6, var(--point-width)) calc(var(--border-width) + var(--point-width));
   grid-template-rows: var(--point-height) var(--point-gap) var(--point-height);
   grid-template-areas:
-    "p12 p11 p10 p9 p8 p7 p0 p6 p5 p4 p3 p2 p1 bsep boff"
-    "l l ld ld ld ld bar r r r r r r msep moff"
-    "p13 p14 p15 p16 p17 p18 p25 p19 p20 p21 p22 p23 p24 wsep woff";
+    "p12 p11 p10 p9 p8 p7 p0 p6 p5 p4 p3 p2 p1 boff"
+    "l l ld ld ld ld bar r r r r r r moff"
+    "p13 p14 p15 p16 p17 p18 p25 p19 p20 p21 p22 p23 p24 woff";
 
   background: tan;
-  border: var(--board-border) solid gray;
+  border: var(--board-border) solid var(--rim-color);
   width: var(--board-width);
 }
 
 .board .columns {
-  grid-area: 1 / 1 / 1 / 14;
-  xgrid-area: 1 / 1 / 1 / 14;
+  grid-area: 1 / 1 / 3 / 15;
 }
 
 .column {
-  --color: brown;
   display: inline-block;
-  height: var(--point-gap);
+  height: calc(var(--point-height) * 2 + var(--point-gap));
   border-left: calc(var(--point-width) / 2) solid transparent;
   border-right: calc(var(--point-width) / 2) solid transparent;
-  border-bottom: var(--point-height) solid var(--color);
+  border-bottom: var(--point-height) solid brown;
   border-top: var(--point-height) solid seagreen;
 }
 
-.off {
-  display: inline-block;
-  height: var(--board-height);
-  width: calc(var(--point-width) + var(--border-width));
-  border-left: var(--border-width) solid gray;
-}
-
-.even {
+.column.even {
   border-bottom-color: seagreen;
   border-top-color: brown;
 }
@@ -63,7 +57,15 @@
   display: inline-block;
   width: var(--bar-width);
   height: var(--board-height);
-  background-color: gray;
+  background-color: var(--rim-color);
+}
+
+.off {
+  display: inline-block;
+  width: calc(var(--point-width) + var(--board-border));
+  height: var(--board-height);
+  border-left: calc(var(--board-border)) solid var(--rim-color);
+  background-color: transparent;
 }
 
 .puck-stack {

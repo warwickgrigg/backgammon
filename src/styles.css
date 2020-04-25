@@ -12,9 +12,9 @@
   --dice-size: calc(var(--puck-diameter) * 12 / 12);
   --point-width: calc(var(--puck-diameter) * 15 / 12);
   --point-height: calc(var(--puck-diameter) * 57 / 12);
-  --point-gap: calc(var(--puck-diameter) * 12 / 12);
+  --point-gap: calc(var(--puck-diameter) * 16 / 12);
   --puck-margin: calc((var(--point-width) - var(--puck-diameter)) / 2);
-  --bar-width: calc(var(--puck-diameter) * 10 / 12);
+  --bar-width: calc(var(--puck-diameter) * 18 / 12);
   --off-width: calc(var(--board-border-width) + var(--point-width));
   --board-border: calc(var(--puck-diameter) * 4 / 12);
   --board-width: calc(

@@ -3,6 +3,8 @@ import React, { useState } from "react";
 import { validFirstMoves, moveOps } from "../engine/moves";
 const jlog = o => console.log(JSON.stringify(o));
 
+const coords = [];
+
 export default ({ points, player, dice, dispatch }) => {
   //const { doMove, undoMove, trailer } = moveOps([me, opp]);
   const [from, setFrom] = useState(-1);
@@ -52,6 +54,14 @@ export default ({ points, player, dice, dispatch }) => {
     const move = moves.pop();
     upState({ moves });
     dispatch(unmakeMove(move));
+  };
+
+  const xy = (point, i) => {
+    const pointWidth = 30;
+    // max / originPoints / excessmultiplier / points / bars / offs
+    const breaks = [[0, 0, 6], [6, 0, 6, 1], []];
+    if (point <= 0) {
+    }
   };
 
   return points.map((stacks, c) =>

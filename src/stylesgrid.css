@@ -7,7 +7,6 @@
 .board * {
   box-sizing: border-box;
 }
-
 .board {
   --puck-diameter: 24px;
   --dice-size: calc(var(--puck-diameter) * 12 / 12);
@@ -15,18 +14,24 @@
   --point-height: calc(var(--puck-diameter) * 57 / 12);
   --point-gap: calc(var(--puck-diameter) * 16 / 12);
   /* --puck-margin: calc((var(--point-width) - var(--puck-diameter)) / 2); */
-  --bar-width: calc(var(--puck-diameter) * 15 / 12);
+  --bar-width: calc(var(--puck-diameter) * 14 / 12);
   --board-border: calc(var(--puck-diameter) * 4 / 12);
   --off-width: calc(var(--point-width));
-  --column-height: calc(var(--point-height) * 2 + var(--point-gap));
-  --bar-height: var(--column-height);
-  --board-height: calc(var(--bar-height) + 2 * var(--board-border));
   --board-width: calc(
-    (var(--point-width) * 12) + var(--bar-width) + (var(--board-border) * 3) +
+    (var(--point-width) * 12) + var(--bar-width) + 3 * var(--board-border) +
       var(--off-width)
   );
+  --board-height: calc(var(--point-height) * 2 + var(--point-gap));
   --rim-color: #8d6e63;
-  position: relative;
+  display: grid;
+  /* prettier-ignore */
+  grid-template-columns: repeat(6, var(--point-width)) var(--bar-width) repeat(6, var(--point-width)) var(--board-border) var(--off-width);
+  grid-template-rows: var(--point-height) var(--point-gap) var(--point-height);
+  grid-template-areas:
+    "p12 p11 p10 p9 p8 p7 p0 p6 p5 p4 p3 p2 p1 bbord boff"
+    "l l ld ld ld ld bar r r r r r r mbord moff "
+    "p13 p14 p15 p16 p17 p18 p25 p19 p20 p21 p22 p23 p24 wbord woff";
+
   background: tan;
   border: var(--board-border) solid var(--rim-color);
   border-image: repeating-linear-gradient(
@@ -37,14 +42,14 @@
     )
     60;
   width: var(--board-width);
-  height: var(--board-height);
 }
 
-.surface {
-  display: flex;
+.board .columns {
+  grid-area: 1 / 1 / 3 / 16;
 }
 
 .column {
+  display: inline-block;
   height: calc(var(--point-height) * 2 + var(--point-gap));
   border-left: calc(var(--point-width) / 2) solid transparent;
   border-right: calc(var(--point-width) / 2) solid transparent;
@@ -58,8 +63,9 @@
 }
 
 .bar {
+  display: inline-block;
   width: var(--bar-width);
-  height: var(--bar-height);
+  height: var(--board-height);
   background-color: var(--rim-color);
   background: repeating-linear-gradient(
     75deg,
@@ -69,22 +75,25 @@
   );
 }
 
-.slat {
-  width: var(--board-border);
-  height: var(--bar-height);
-  background: var(--rim-color);
+.off {
+  display: inline-block;
+  width: var(--off-width);
+  height: var(--board-height);
+  background-color: transparent;
 }
 
-.off {
-  width: var(--off-width);
-  height: var(--bar-height);
-  background-color: tarnsparent;
+.puck-stack {
+  justify-self: center;
+  display: flex;
+  flex-direction: column;
+  background: transparent;
+}
+
+.puck-stack.near {
+  flex-direction: column-reverse;
 }
 
 .puck {
-  position: absolute;
-  left: 20px;
-  top: 20px;
   background: ivory;
   width: var(--puck-diameter);
   height: var(--puck-diameter);
@@ -109,15 +118,20 @@
   background: blue;
 }
 
+.dice {
+  grid-area: ld;
+  align-self: center;
+  justify-content: space-evenly;
+  display: flex;
+}
+
 .die {
-  position: absolute;
-  left: 40px;
-  top: 40px;
+  display: block;
   line-height: var(--dice-size);
   width: var(--dice-size);
   height: var(--dice-size);
   margin: calc(var(--dice-size) / 10);
-  border-radius: calc(var(--dice-size) / 6);
+  border-radius: calc(var(--dice-size) / 5);
   background-color: ivory;
   text-align: center;
   transform: rotate(5deg);

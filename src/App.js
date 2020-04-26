@@ -11,8 +11,8 @@ const jlog = o => console.log(JSON.stringify(o));
 
 let boardStart;
 boardStart = toBoard("1w2,6b5,8b3,12w5,13b5,17w3,19w5,24b2/w/1,5");
-boardStart = toBoard("1w2,2b,6b4,8b3,12w5,13b5,17w3,19w5,24b2/w/1,5");
-boardStart = toBoard("20w,23w,24w/w/1,5");
+//boardStart = toBoard("1w2,2b,6b4,8b3,12w5,13b5,17w3,19w5,24b2/w/1,5");
+//boardStart = toBoard("20w,23w,24w/w/1,5");
 
 //jlog(toBoard("1w2,6b5,8b3,12w5,13b5,17w3,19w5,24b2/w/1,2"));
 //

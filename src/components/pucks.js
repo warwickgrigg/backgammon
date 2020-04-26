@@ -56,12 +56,30 @@ export default ({ points, player, dice, dispatch }) => {
     dispatch(unmakeMove(move));
   };
 
-  const xy = (point, i) => {
-    const pointWidth = 30;
+  const xy = (p, c) => {
+    const puckDiameter = 24;
+    const pointWidth = (puckDiameter * 15) / 12;
+    const barWidth = (puckDiameter * 15) / 12;
+    const boardBorder = (puckDiameter * 4) / 12;
+    const slatwidth = boardBorder;
+    // --dice-size: calc(var(--puck-diameter) * 12 / 12);
+    const pointHeight = (puckDiameter * 57) / 12;
+    const pointGap = (puckDiameter * 16) / 12;
+    const offWidth = pointWidth;
+    const columnHeight = pointHeight * 2 + pointGap;
+    const barHeight = columnHeight;
+    //const boardHeight = barHeight + 2 * boardBorder;
+    //const boardWidth = pointWidth * 12 + barWidth + boardBorder * 3 + offWidth;
     // max / originPoints / excessmultiplier / points / bars / offs
-    const breaks = [[0, 0, 6], [6, 0, 6, 1], []];
-    if (point <= 0) {
-    }
+    const [pW, bW, bH] = [pointWidth, barWidth, barHeight];
+    const d = puckDiameter;
+    const r = d / 2;
+    if (p <= 0) return [6 * pW + 0.5 * bW - r, c * d];
+    if (p <= 6) return [(12.5 - p) * pW + bW - r, c * d];
+    if (p <= 12) return [(12.5 - p) * pW - r, c * d];
+    if (p <= 18) return [(p - 12.5) * pW - r, bH - (c + 1) * d];
+    if (p <= 24) return [(p - 12.5) * pW + bW - r, bH - (c + 1) * d];
+    return [12 * pW + bW + slatwidth + 0.5 * offWidth - r, bH - (c + 1) * d];
   };
 
   return points.map((stacks, c) =>
@@ -89,16 +107,20 @@ export default ({ points, player, dice, dispatch }) => {
       //jlog({ p, from, topClassSuffix });
       return (
         <div className={stackClass} key={gridArea} style={{ gridArea }}>
-          {Array.from(new Array(count), (_, k) => (
-            <div
-              onClick={() => puckClick(p)}
-              key={k}
-              id={`p/${p}/${k}`}
-              className={puckClass + (k === count - 1 ? topClassSuffix : "")}
-            >
-              {!k && excess}
-            </div>
-          ))}
+          {Array.from(new Array(count), (_, k) => {
+            const [left, top] = xy(p, k);
+            return (
+              <div
+                onClick={() => puckClick(p)}
+                key={k}
+                id={`p/${p}/${k}`}
+                style={{ left, top }}
+                className={puckClass + (k === count - 1 ? topClassSuffix : "")}
+              >
+                {!k && excess}
+              </div>
+            );
+          })}
         </div>
       );
     })

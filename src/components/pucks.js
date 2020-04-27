@@ -91,8 +91,9 @@ export default ({ points, player, dice, dispatch }) => {
       let stack = stacks[point];
       let topSuffix = "";
       const p = c ? 25 - point : point;
-      if (isTo(from, p) && !points[1 - c][25 - point]) {
+      if (isTo(from, p) && !points[1 - c][25 - point].length) {
         stack = stack.concat(`onTop${point}`);
+        jlog({ stack });
         topSuffix = " to";
       } else if (from === -1 && isFrom(p)) {
         topSuffix = " from";

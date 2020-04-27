@@ -78,7 +78,7 @@
 .off {
   width: var(--off-width);
   height: var(--bar-height);
-  background-color: tarnsparent;
+  xbackground-color: transparent;
 }
 
 .puck {
@@ -91,17 +91,18 @@
   line-height: var(--puck-diameter);
   border-radius: 50%;
   text-align: center;
+  transition: background-color 2s;
 }
 
 .puck.dark {
   background: rgb(7, 7, 48);
 }
 
-.puck.possible-fron {
+.puck.from {
   background: pink;
 }
 
-.puck.possible-to {
+.puck.to {
   background: green;
 }
 

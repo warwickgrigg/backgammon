@@ -9,13 +9,21 @@ import toBoard from "./engine/toBoard";
 
 const jlog = o => console.log(JSON.stringify(o));
 
-let boardStart;
-boardStart = toBoard("1w2,6b5,8b3,12w5,13b5,17w3,19w5,24b2/w/1,5");
-//boardStart = toBoard("1w2,2b,6b4,8b3,12w5,13b5,17w3,19w5,24b2/w/1,5");
-//boardStart = toBoard("20w,23w,24w/w/1,5");
+const txt2State = s => {
+  const state = toBoard(s);
+  state.points = state.points.map((a, col) =>
+    a.map((c, p) => Array.from(new Array(c), (_, i) => col * 1000 + p * 10 + i))
+  );
+  return state;
+};
 
-//jlog(toBoard("1w2,6b5,8b3,12w5,13b5,17w3,19w5,24b2/w/1,2"));
+let boardStart;
+boardStart = txt2State("1w2,6b5,8b3,12w5,13b5,17w3,19w5,24b2/w/1,5");
+//boardStart = txt2State("1w2,2b,6b4,8b3,12w5,13b5,17w3,19w5,24b2/w/1,5");
+//boardStart = txt2State("20w,23w,24w/w/1,5");
 //
+jlog({ boardStart });
+
 const init = {
   counter: 0,
   // dice: [1, 5],

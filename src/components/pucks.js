@@ -3,21 +3,23 @@ import React, { useState } from "react";
 import { validFirstMoves, moveOps } from "../engine/moves";
 const jlog = o => console.log(JSON.stringify(o));
 
-const coords = [];
-
 export default ({ points, player, dice, dispatch }) => {
   //const { doMove, undoMove, trailer } = moveOps([me, opp]);
   const [from, setFrom] = useState(-1);
   const [state, setState] = useState({ moves: [] });
   const upState = slice => setState({ ...state, ...slice });
-  const fm = validFirstMoves({ points, dice, player });
+  const fm = validFirstMoves({
+    points: points.map(c => c.map(p => p.length)),
+    dice,
+    player
+  });
 
-  const isPossibleFrom = from => {
+  const isFrom = from => {
     for (let i = 0; i < fm.length; i++) if (from === fm[i][0][0]) return true;
     return false;
   };
 
-  const isPossibleTo = (from, to) => {
+  const isTo = (from, to) => {
     for (let i = 0; i < fm.length; i++)
       if (to === fm[i][0][1] && from === fm[i][0][0]) return true;
     return false;
@@ -36,11 +38,12 @@ export default ({ points, player, dice, dispatch }) => {
   };
 
   const puckClick = p => {
+    jlog({ p, from });
     if (p === from) {
       setFrom(-1);
-    } else if (from === -1 && isPossibleFrom(p)) {
+    } else if (from === -1 && isFrom(p)) {
       setFrom(p);
-    } else if (isPossibleTo(from, p)) {
+    } else if (isTo(from, p)) {
       const to = p;
       const taken = fm.find(m => m[0][0] === from && m[0][1] === to)[0][2];
       upState({ moves: state.moves.concat({ from, to, taken }) });
@@ -82,47 +85,33 @@ export default ({ points, player, dice, dispatch }) => {
     return [12 * pW + bW + slatwidth + 0.5 * offWidth - r, bH - (c + 1) * d];
   };
 
-  return points.map((stacks, c) =>
-    stacks.map((count, point) => {
-      let topClassSuffix;
+  for (var pucks = [], c = 0; c < points.length; c++) {
+    const puckClass = ["puck", "puck dark"][c];
+    for (let stacks = points[c], point = 0; point < stacks.length; point++) {
+      let stack = stacks[point];
+      let topSuffix = "";
       const p = c ? 25 - point : point;
-      if (isPossibleTo(from, p) && !points[1 - c][25 - point]) {
-        count += 1;
-        topClassSuffix = " possible-to";
-      } else
-        topClassSuffix =
-          p === from
-            ? " selected"
-            : from === -1 && isPossibleFrom(p)
-            ? " possible-from"
-            : "";
-      if (count > 5) {
-        var excess = `+${count - 5}`;
-        count = 5;
+      if (isTo(from, p) && !points[1 - c][25 - point]) {
+        stack = stack.concat(`onTop${point}`);
+        topSuffix = " to";
+      } else if (from === -1 && isFrom(p)) {
+        topSuffix = " from";
+      } else if (p === from) topSuffix = " selected";
+      const excess = stack.length - 5;
+      if (excess > 0) stack = stack.slice(5);
+      for (let k = 0; k < stack.length; k++) {
+        const id = `p/${stack[k]}`;
+        //jlog({ c, point, k });
+        const [left, top] = xy(p, k);
+        const className = puckClass + (k === stack.length - 1 ? topSuffix : "");
+        const props = { id, key: id, style: { left, top }, className };
+        pucks.push(
+          <div onClick={() => puckClick(p)} {...props}>
+            {!k && excess > 0 && excess}
+          </div>
+        );
       }
-
-      const gridArea = p < 25 ? `p${p}` : ["woff", "boff"][c];
-      const stackClass = p > 12 ? "puck-stack near" : "puck-stack";
-      const puckClass = ["puck", "puck dark"][c];
-      //jlog({ p, from, topClassSuffix });
-      return (
-        <div className={stackClass} key={gridArea} style={{ gridArea }}>
-          {Array.from(new Array(count), (_, k) => {
-            const [left, top] = xy(p, k);
-            return (
-              <div
-                onClick={() => puckClick(p)}
-                key={k}
-                id={`p/${p}/${k}`}
-                style={{ left, top }}
-                className={puckClass + (k === count - 1 ? topClassSuffix : "")}
-              >
-                {!k && excess}
-              </div>
-            );
-          })}
-        </div>
-      );
-    })
-  );
+    }
+  }
+  return <div>{pucks}</div>;
 };

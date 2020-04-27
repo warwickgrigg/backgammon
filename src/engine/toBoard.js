@@ -29,7 +29,7 @@ const toBoard = a => {
     points[color][p] = count;
   });
   onboardCount.forEach((v, color) => (points[color][25] = 15 - v));
-  return { points, player: a[1], dice: a[2] };
+  return { points, player: a[1], dice: [...a[2]] };
 };
 
 export default toBoard;

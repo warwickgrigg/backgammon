@@ -27,6 +27,7 @@ const Pucks = ({ stacks, player, dice, dispatch }) => {
   };
 
   const isTo = (from, to) => {
+    if (from >= 0) return false;
     for (let i = 0; i < fm.length; i++)
       if (to === fm[i][0][1] && from === fm[i][0][0]) return true;
     return false;
@@ -102,43 +103,39 @@ const Pucks = ({ stacks, player, dice, dispatch }) => {
       let topSuffix = "";
       const p = c ? 25 - point : point;
       if (isTo(state.from, p) && !stacks[1 - c][25 - point].length) {
-        stack = stack.concat(`onTop${point}`);
+        stack = stack.concat(`top${point}`);
         topSuffix = " to";
       } else if (state.from === -1 && isFrom(p)) {
         topSuffix = " from";
       } else if (p === state.from) topSuffix = " selected";
-      const excess = stack.length - 5;
-      if (excess > 0) stack = stack.slice(5);
+      stack = stack.slice(-5);
       for (let k = 0; k < stack.length; k++) {
         const id = `p/${stack[k]}`;
-        //jlog({ c, point, k });
         const [left, top] = xy(p, k);
         const className = puckClass + (k === stack.length - 1 ? topSuffix : "");
         const props = { id, key: id, style: { left, top }, className };
         pucks.push(
           <div onClick={() => puckClick(p)} {...props}>
-            {!k && excess > 0 && excess}
+            {!k && cStacks[point].length > 5 && cStacks[point].length}
           </div>
         );
       }
     }
   }
 
-  const actions = [
+  const buttons = [
     ["undo", undoClick, () => state.from >= 0 || state.moves.length > 0],
     ["done", () => 0, () => state.moves.length >= dice.length],
     ["throw", throwDice, () => state.moves.length === 0 || dice.length === 0]
-  ];
-
-  const buttons = () => actions.filter(([txt, fn, condition]) => condition());
+  ].filter(([txt, action, active]) => active());
 
   return (
     <div className="elements">
       <Dice dice={dice} used={state.moves.map(({ from, to }) => to - from)} />
       <div className="pucks">{pucks}</div>
       <div className="buttons">
-        {buttons().map(([text, fn], i) => (
-          <div className="button" key={i} onClick={fn}>
+        {buttons.map(([text, action], i) => (
+          <div className="button" key={i} onClick={action}>
             {text}
           </div>
         ))}

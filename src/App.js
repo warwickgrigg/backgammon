@@ -22,6 +22,7 @@ const txt2State = s => {
 
 let boardStart;
 boardStart = txt2State("1w2,6b5,8b3,12w5,13b5,17w3,19w5,24b2/w/5,5");
+boardStart = txt2State("1w2,6b5,8b3,12w5,13b5,17w6,19w2,24b2/w/5,5");
 //boardStart = txt2State("1w2,2b,6b4,8b3,12w5,13b5,17w3,19w5,24b2/w/1,5");
 //boardStart = txt2State("20w,23w,24w/w/1,5");
 //

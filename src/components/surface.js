@@ -2,7 +2,7 @@ import React from "react";
 
 const columnClass = ["column even", "column odd"];
 
-const surface = () => {
+const Surface = () => {
   const result = Array.from(new Array(12), (_, c) => {
     //const gridArea = `p${c}`;
     return <div className={columnClass[c % 2]} key={`c${c}`} id={`c/${c}`} />;
@@ -13,4 +13,4 @@ const surface = () => {
   return <div className="surface">{result}</div>;
 };
 
-export default surface;
+export default Surface;

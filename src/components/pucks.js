@@ -1,6 +1,7 @@
-import React, { useState, useReducer } from "react";
+import React, { useReducer } from "react";
+import Dice from "./dice";
 //import { useStateValue } from "../state";
-import { validFirstMoves, moveOps } from "../engine/moves";
+import { validFirstMoves } from "../engine/moves";
 import dimensions from "./dimensions";
 const jlog = o => console.log(JSON.stringify(o));
 
@@ -20,6 +21,7 @@ const Pucks = ({ points, player, dice, dispatch }) => {
   });
 
   const isFrom = from => {
+    if (state.moves.length >= dice.length) return false;
     for (let i = 0; i < fm.length; i++) if (from === fm[i][0][0]) return true;
     return false;
   };
@@ -30,7 +32,7 @@ const Pucks = ({ points, player, dice, dispatch }) => {
     return false;
   };
 
-  const makeMove = ({ from, to, taken }) => state => {
+  const makeMove = ({ from, to, taken }) => {
     points[player][to].push(points[player][from].pop());
     if (taken) points[1 - player][0].push(points[1 - player][25 - to].pop());
     return { points };
@@ -62,13 +64,18 @@ const Pucks = ({ points, player, dice, dispatch }) => {
   };
 
   const undoClick = () => {
-    const { moves } = state;
-    const move = moves.pop();
-    upState({ moves });
-    dispatch(unmakeMove(move));
+    const { from, moves } = state;
+    if (from >= 0) {
+      upState({ from: -1 });
+    } else if (moves.length) {
+      const move = moves.pop();
+      upState({ moves });
+      dispatch(unmakeMove(move));
+    }
   };
 
   const xy = (p, c) => {
+    // in preparation for animated pucks
     const d = dimensions;
     const { pointWidth: pW, barWidth: bW, barHeight: bH, puckDiameter: pD } = d;
     const r = pD / 2;
@@ -83,13 +90,12 @@ const Pucks = ({ points, player, dice, dispatch }) => {
 
   for (var pucks = [], c = 0; c < points.length; c++) {
     const puckClass = ["puck", "puck dark"][c];
-    for (let stacks = points[c], point = 0; point < stacks.length; point++) {
-      let stack = stacks[point];
+    for (let cStacks = points[c], point = 0; point < cStacks.length; point++) {
+      let stack = cStacks[point];
       let topSuffix = "";
       const p = c ? 25 - point : point;
       if (isTo(state.from, p) && !points[1 - c][25 - point].length) {
         stack = stack.concat(`onTop${point}`);
-        jlog({ stack });
         topSuffix = " to";
       } else if (state.from === -1 && isFrom(p)) {
         topSuffix = " from";
@@ -110,10 +116,26 @@ const Pucks = ({ points, player, dice, dispatch }) => {
       }
     }
   }
+
+  const actions = [
+    ["undo", undoClick, () => state.from >= 0 || state.moves.length > 0],
+    ["done", () => 0, () => state.moves.length >= dice.length],
+    ["throw", () => 0, () => dice.length === 0]
+  ];
+
+  const buttons = () => actions.filter(([txt, fn, condition]) => condition());
+
   return (
     <div className="elements">
+      <Dice dice={dice} used={state.moves.map(({ from, to }) => to - from)} />
       <div className="pucks">{pucks}</div>
-      <div className="undo-button">Undo</div>
+      <div className="buttons">
+        {buttons().map(([text, fn], i) => (
+          <div className="button" key={i} onClick={fn}>
+            {text}
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

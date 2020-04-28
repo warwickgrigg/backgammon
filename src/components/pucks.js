@@ -27,7 +27,7 @@ const Pucks = ({ stacks, player, dice, dispatch }) => {
   };
 
   const isTo = (from, to) => {
-    if (from >= 0) return false;
+    if (from < 0) return false;
     for (let i = 0; i < fm.length; i++)
       if (to === fm[i][0][1] && from === fm[i][0][0]) return true;
     return false;

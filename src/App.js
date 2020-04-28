@@ -7,12 +7,14 @@ import Board from "./components/board";
 import toBoard from "./engine/toBoard";
 //import { validMoves } from "./engine/moves";
 
-const jlog = o => console.log(JSON.stringify(o));
+const jlog = o => (console.log(JSON.stringify(o)), o);
 
 const txt2State = s => {
   const state = toBoard(s);
   state.points = state.points.map((a, col) =>
-    a.map((c, p) => Array.from(new Array(c), (_, i) => col * 1000 + p * 10 + i))
+    a.map((c, p) =>
+      Array.from(new Array(c), (_, i) => (col + 1) * 1000 + p * 10 + i)
+    )
   );
   return state;
 };
@@ -33,15 +35,10 @@ const init = {
   //player: 0
 };
 
-const reducer = (state, update) => {
-  if (typeof update === "function") return { ...state, ...update(state) };
-  switch (update.type) {
-    case "inc":
-      return { ...state, counter: state.counter + update.value };
-    default:
-      return state;
-  }
-};
+const reducer = (state, update) => ({
+  ...state,
+  ...jlog(typeof update === "function" ? update(state) : update)
+});
 
 export default function App() {
   const [state, dispatch] = useReducer(reducer, init);

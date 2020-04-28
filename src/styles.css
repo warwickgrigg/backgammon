@@ -12,14 +12,15 @@
   --puck-diameter: 24px;
   --dice-size: calc(var(--puck-diameter) * 12 / 12);
   --point-width: calc(var(--puck-diameter) * 15 / 12);
-  --point-height: calc(var(--puck-diameter) * 57 / 12);
-  --point-gap: calc(var(--puck-diameter) * 16 / 12);
+  --point-height: calc(var(--puck-diameter) * 60 / 12);
+  --point-gap: calc(var(--puck-diameter) * 18 / 12);
   /* --puck-margin: calc((var(--point-width) - var(--puck-diameter)) / 2); */
   --bar-width: calc(var(--puck-diameter) * 15 / 12);
   --board-border: calc(var(--puck-diameter) * 4 / 12);
   --off-width: calc(var(--point-width));
   --column-height: calc(var(--point-height) * 2 + var(--point-gap));
   --bar-height: var(--column-height);
+  --inner-width: calc(var(--point-width) * 6);
   --board-height: calc(var(--bar-height) + 2 * var(--board-border));
   --board-width: calc(
     (var(--point-width) * 12) + var(--bar-width) + (var(--board-border) * 3) +
@@ -110,16 +111,28 @@
   background: blue;
 }
 
+.undo-button,
 .die {
   position: absolute;
   left: 40px;
   top: 40px;
   line-height: var(--dice-size);
-  width: var(--dice-size);
   height: var(--dice-size);
   margin: calc(var(--dice-size) / 10);
   border-radius: calc(var(--dice-size) / 6);
   background-color: ivory;
   text-align: center;
+}
+
+.die {
+  width: var(--dice-size);
   transform: rotate(5deg);
+}
+
+.undo-button {
+  position: absolute;
+  background-color: ivory;
+  height: dice-size;
+  left: calc(var(--inner-width) + var(--bar-width));
+  top: calc(var(--bar-height) / 2 - var(--dice-size) / 2);
 }

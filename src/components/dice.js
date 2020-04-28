@@ -1,5 +1,5 @@
 import React from "react";
-export default ({ values }) => (
+const dice = ({ values }) => (
   <div className="dice">
     {values.map((v, i) => (
       <div className="die" key={i}>
@@ -8,3 +8,5 @@ export default ({ values }) => (
     ))}
   </div>
 );
+
+export default dice;

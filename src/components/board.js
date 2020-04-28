@@ -7,7 +7,7 @@ import Dice from "./dice";
 
 const jlog = o => console.log(JSON.stringify(o));
 
-export default ({ points, dice, player, dispatch }) => {
+const board = ({ points, dice, player, dispatch }) => {
   //const [selectedPoint, selectPoint] = useState(-1);
   const boardClick = e => {
     const el = e.target;
@@ -32,3 +32,5 @@ export default ({ points, dice, player, dispatch }) => {
     </div>
   );
 };
+
+export default board;

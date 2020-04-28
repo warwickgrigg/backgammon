@@ -1,7 +1,7 @@
 import React, { useReducer } from "react";
 import Dice from "./dice";
 //import { useStateValue } from "../state";
-import { validFirstMoves } from "../engine/moves";
+import { validFirstMoves, validMoves } from "../engine/moves";
 import dimensions from "./dimensions";
 const jlog = o => console.log(JSON.stringify(o));
 
@@ -127,7 +127,7 @@ const Pucks = ({ stacks, player, dice, dispatch }) => {
   const actions = [
     ["undo", undoClick, () => state.from >= 0 || state.moves.length > 0],
     ["done", () => 0, () => state.moves.length >= dice.length],
-    ["throw", throwDice, () => true || dice.length === 0]
+    ["throw", throwDice, () => state.moves.length === 0 || dice.length === 0]
   ];
 
   const buttons = () => actions.filter(([txt, fn, condition]) => condition());

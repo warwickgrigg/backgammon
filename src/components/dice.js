@@ -2,7 +2,7 @@ import React from "react";
 
 const Dice = ({ dice, used }) => {
   const isUsed = i =>
-    dice.length === 4 ? i < used.length : used.contains(dice[i]);
+    dice.length === 4 ? i < used.length : used.includes(dice[i]);
   return (
     <div className="dice">
       {dice.map((v, i) => (

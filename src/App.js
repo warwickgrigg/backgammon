@@ -11,12 +11,12 @@ const jlog = o => {
 
 const txt2State = s => {
   let state = toBoard(s);
-  state.points = state.points.map((a, col) =>
+  state.stacks = state.points.map((a, col) =>
     a.map((c, p) =>
       Array.from(new Array(c), (_, i) => (col + 1) * 1000 + p * 10 + i)
     )
   );
-  //state.stacks = state.points;
+  delete state.points;
   return state;
 };
 

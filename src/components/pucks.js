@@ -11,11 +11,11 @@ const reducer = (state, action) => ({
   ...(typeof action === "function" ? action(state) : action)
 });
 
-const Pucks = ({ points, player, dice, dispatch }) => {
+const Pucks = ({ stacks, player, dice, dispatch }) => {
   //const { doMove, undoMove, trailer } = moveOps([me, opp]);
   const [state, upState] = useReducer(reducer, initState);
   const fm = validFirstMoves({
-    points: points.map(c => c.map(p => p.length)),
+    points: stacks.map(c => c.map(p => p.length)),
     dice,
     player
   });
@@ -33,15 +33,15 @@ const Pucks = ({ points, player, dice, dispatch }) => {
   };
 
   const makeMove = ({ from, to, taken }) => {
-    points[player][to].push(points[player][from].pop());
-    if (taken) points[1 - player][0].push(points[1 - player][25 - to].pop());
-    return { points };
+    stacks[player][to].push(stacks[player][from].pop());
+    if (taken) stacks[1 - player][0].push(stacks[1 - player][25 - to].pop());
+    return { stacks };
   };
 
   const unmakeMove = ({ from, to, taken }) => {
-    points[player][from].push(points[player][to].pop());
-    if (taken) points[1 - player][25 - to].push(points[1 - player][0].pop());
-    return { points };
+    stacks[player][from].push(stacks[player][to].pop());
+    if (taken) stacks[1 - player][25 - to].push(stacks[1 - player][0].pop());
+    return { stacks };
   };
 
   const puckClick = p => {
@@ -74,6 +74,13 @@ const Pucks = ({ points, player, dice, dispatch }) => {
     }
   };
 
+  const throwDice = () => {
+    let dice = [];
+    for (let i = 0; i < 2; i++) dice[i] = Math.floor(6 * Math.random()) + 1;
+    if (dice[0] === dice[1]) dice = Array(4).fill(dice[0]);
+    dispatch({ dice });
+  };
+
   const xy = (p, c) => {
     // in preparation for animated pucks
     const d = dimensions;
@@ -88,13 +95,13 @@ const Pucks = ({ points, player, dice, dispatch }) => {
     return [12 * pW + bW + sW + 0.5 * oW - r, bH - (c + 1) * pD];
   };
 
-  for (var pucks = [], c = 0; c < points.length; c++) {
+  for (var pucks = [], c = 0; c < stacks.length; c++) {
     const puckClass = ["puck", "puck dark"][c];
-    for (let cStacks = points[c], point = 0; point < cStacks.length; point++) {
+    for (let cStacks = stacks[c], point = 0; point < cStacks.length; point++) {
       let stack = cStacks[point];
       let topSuffix = "";
       const p = c ? 25 - point : point;
-      if (isTo(state.from, p) && !points[1 - c][25 - point].length) {
+      if (isTo(state.from, p) && !stacks[1 - c][25 - point].length) {
         stack = stack.concat(`onTop${point}`);
         topSuffix = " to";
       } else if (state.from === -1 && isFrom(p)) {
@@ -120,7 +127,7 @@ const Pucks = ({ points, player, dice, dispatch }) => {
   const actions = [
     ["undo", undoClick, () => state.from >= 0 || state.moves.length > 0],
     ["done", () => 0, () => state.moves.length >= dice.length],
-    ["throw", () => 0, () => dice.length === 0]
+    ["throw", throwDice, () => true || dice.length === 0]
   ];
 
   const buttons = () => actions.filter(([txt, fn, condition]) => condition());
